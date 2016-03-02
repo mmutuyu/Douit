@@ -34,7 +34,6 @@ public class CollisionDetect : MonoBehaviour {
 			GameManager.count2 += 1;
 		}
 		SetTxt ();
-		Debug.Log (GameManager.count1);
 		if (GameManager.count1 >= 5) {
 			//red win
 			SetCountToZero ("Red Win!");
