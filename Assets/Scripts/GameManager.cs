@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
         public float minimum;             //Minimum value for our Count class.
         public float maximum;             //Maximum value for our Count class.
 
-
         //Assignment constructor.
         public Count(float min, float max)
         {
@@ -22,39 +21,45 @@ public class GameManager : MonoBehaviour
         }
     }
 
-	public static int count1 = 0;
-	public static int count2 = 0;
+    public static int count1 = 0;
+    public static int count2 = 0;
     public static GameManager instance = null;
     public GameObject[] PickUps;
+    public SpriteRenderer spriteRender;
 
     public float pi = (float)Math.PI;
-    private float radius = Screen.width / 3;
+    private float radius;
     private Count spawnInterval = new Count(3f, 6f);
     private List<ItemController> itemsOnBoard;
-    private int MaxItemsOnBoard = 8;
+    private int MaxItemsOnBoard = 5;
     private float nextSpawnTime;
-    private Vector3 cameraPosition;
+    private Vector3 boardCenter;
+    private Vector3 boardSize;
 
     void Awake()
     {
 
         //Check if instance already exists
         if (instance == null)
-
+        {
             //if not, set instance to this
             instance = this;
-
+        }
         //If instance already exists and it's not this:
         else if (instance != this)
-
+        {
             //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
             Destroy(gameObject);
+        }
     }
 
     // Use this for initialization
     void Start()
     {
-        cameraPosition = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane));
+        boardCenter = spriteRender.bounds.center;
+        boardSize = spriteRender.bounds.size;
+        radius = boardSize.x / 3;
+
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
     }
@@ -89,10 +94,15 @@ public class GameManager : MonoBehaviour
                     x = r * (float)Math.Cos(theta);
                     y = r * (float)Math.Sin(theta);
                     toInstantiate = PickUps[Random.Range(0, PickUps.Length)];
-                    colliderRadius = toInstantiate.GetComponent<CircleCollider2D>().radius;
-                    instantiatePosition = cameraPosition + new Vector3(x, y, 0);
+                    colliderRadius = toInstantiate.transform.localScale.x * toInstantiate.GetComponent<CircleCollider2D>().radius;
+                    instantiatePosition = boardCenter + new Vector3(x, y, 0);
+                    if (Physics2D.OverlapCircle(instantiatePosition, colliderRadius) != null)
+                    {
+                        Collider2D hit = Physics2D.OverlapCircle(instantiatePosition, colliderRadius);
+                        Debug.Log("pos:" + instantiatePosition + " and radius:" + colliderRadius + " has Collision:" + hit.gameObject.transform.localPosition);
+                    }
                 }
-                Instantiate(toInstantiate, instantiatePosition , Quaternion.identity);
+                Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
         }
     }

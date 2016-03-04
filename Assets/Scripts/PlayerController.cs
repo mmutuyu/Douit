@@ -9,17 +9,19 @@ public class PlayerController : MonoBehaviour
 
     public float degree = (float)Math.PI / 360;
     public static Vector3 EnlargeSize = new Vector3(5, 5, 0);
-    public static float SpeedChange = 2;
     public static float ItemDurationTime = 5;
 
 
-    private float speed = 20000;
+    public float SpeedOriginal = 15000f;
+    public float SpeedUp = 25000f;
+    
     private Rigidbody2D rb2d;
     private bool isRotate;
     private float angel;
     private float[] statusTimeLeft;
-	private Vector3 ScaleOriginal;
-	private Vector3 ScaleEnlarged;
+    private Vector3 ScaleOriginal;
+    private Vector3 ScaleEnlarged;
+    private float curSpeed;
 
     void Start()
     {
@@ -27,8 +29,11 @@ public class PlayerController : MonoBehaviour
         isRotate = true;
         angel = 100;
         statusTimeLeft = new float[2];
-		ScaleOriginal = transform.localScale;
-		ScaleEnlarged = ScaleOriginal + EnlargeSize;
+
+        ScaleOriginal = transform.localScale;
+        ScaleEnlarged = ScaleOriginal + EnlargeSize;
+
+        curSpeed = SpeedOriginal;
     }
 
     // Update is called once per frame
@@ -49,12 +54,12 @@ public class PlayerController : MonoBehaviour
 
                 switch (i)
                 {
-					case 0:
-						PlayerEnlarge (false);
+                    case 0:
+                        PlayerEnlarge(false);
                         //speed *= SpeedChange;
                         break;
                     case 1:
-                        speed /= SpeedChange;
+                        PlayerSpeedUp(false);
                         break;
                 }
 
@@ -66,7 +71,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!isRotate)
         {
-            rb2d.AddRelativeForce(new Vector2(0, 1) * speed);
+            rb2d.AddRelativeForce(new Vector2(0, 1) * curSpeed);
         }
     }
 
@@ -77,23 +82,23 @@ public class PlayerController : MonoBehaviour
         {
             if (statusTimeLeft[0] <= 0)
             {
-				PlayerEnlarge(true);
-                //speed /= SpeedChange;
+                PlayerEnlarge(true);
             }
             statusTimeLeft[0] = ItemDurationTime;
-
-			other.gameObject.SetActive(false);
+            
+            other.gameObject.SetActive(false);
         }
         else if (other.tag == "Item_Speed")
         {
             if (statusTimeLeft[1] <= 0)
             {
-                speed *= SpeedChange;
+                PlayerSpeedUp(true);
             }
             statusTimeLeft[1] = ItemDurationTime;
-			other.gameObject.SetActive(false);
+
+            other.gameObject.SetActive(false);
         }
-        
+
     }
 
     public void ChangeRotationStatus()
@@ -101,11 +106,18 @@ public class PlayerController : MonoBehaviour
         isRotate = !isRotate;
     }
 
-	public void ChangeRotationDirection(){
-		angel = -angel;
-	}
+    public void ChangeRotationDirection()
+    {
+        angel = -angel;
+    }
 
-	public void PlayerEnlarge(bool isEnlarged){
-		transform.localScale = isEnlarged ? ScaleEnlarged : ScaleOriginal;
-	}
+    public void PlayerEnlarge(bool isEnlarged)
+    {
+        transform.localScale = isEnlarged ? ScaleEnlarged : ScaleOriginal;
+    }
+
+    public void PlayerSpeedUp(bool isSpeedUp)
+    {
+        curSpeed = isSpeedUp ? SpeedUp : SpeedOriginal;
+    }
 }
