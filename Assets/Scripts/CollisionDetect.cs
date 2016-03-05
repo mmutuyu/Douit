@@ -40,9 +40,8 @@ public class CollisionDetect : MonoBehaviour {
 		} else if (GameManager.count2 >= 5) {
 			//white win
 			SetCountToZero ("White Win");
-		} else {
-			Application.LoadLevel (Application.loadedLevel);
 		}
+		Application.LoadLevel (Application.loadedLevel);
 
 	}
 }
