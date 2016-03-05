@@ -2,7 +2,7 @@
 
 public class ItemController : MonoBehaviour {
 
-    public static float ItemDisappearTime = 30f;
+    public static float ItemDisappearTime = 10f;
 
     private float timeLeft;
 
