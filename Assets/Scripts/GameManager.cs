@@ -33,9 +33,9 @@ public class GameManager : MonoBehaviour
 
     //generate item
     private float radius;
-    private Count spawnInterval = new Count(3f, 6f);
+    private Count spawnInterval = new Count(4f, 5f);
     private List<ItemController> itemsOnBoard;
-    private int MaxItemsOnBoard = 1;
+    private int MaxItemsOnBoard = 3;
     private float nextSpawnTime;
     private Vector3 boardCenter;
     private Vector3 boardSize;

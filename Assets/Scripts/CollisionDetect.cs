@@ -22,8 +22,8 @@ public class CollisionDetect : MonoBehaviour {
 		GameManager.count1 = 0;
 		GameManager.count2 = 0;
 		winLose.text = whowin;
-//		yield return new WaitForSeconds(5);
-//		winLose.text = "";
+		//yield return new WaitForSeconds(5);
+		//winLose.text = "";
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
