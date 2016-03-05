@@ -14,11 +14,12 @@ public class PlayerController : MonoBehaviour
 
     public float SpeedOriginal = 15000f;
     public float SpeedUp = 25000f;
-    
+
     private Rigidbody2D rb2d;
     private bool isRotate;
     private float angel;
     private float[] statusTimeLeft;
+
     private Vector3 ScaleOriginal;
     private Vector3 ScaleEnlarged;
     private float curSpeed;
@@ -85,7 +86,7 @@ public class PlayerController : MonoBehaviour
                 PlayerEnlarge(true);
             }
             statusTimeLeft[0] = ItemDurationTime;
-            
+
             other.gameObject.SetActive(false);
         }
         else if (other.tag == "Item_Speed")
@@ -120,4 +121,6 @@ public class PlayerController : MonoBehaviour
     {
         curSpeed = isSpeedUp ? SpeedUp : SpeedOriginal;
     }
+
+
 }
