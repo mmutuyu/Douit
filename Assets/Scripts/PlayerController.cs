@@ -1,51 +1,93 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
 
-    // Use this for initialization
+    public Text powerCountText;
 
-    public float degree = (float)Math.PI / 360;
-    public static Vector3 EnlargeSize = new Vector3(5, 5, 0);
-    public static float ItemDurationTime = 5;
+    /// <summary>
+    /// static parameters
+    /// </summary>
+    private static float degree = (float)Math.PI / 360;
+
+    //skill
+    private static float StatusDurationTime = 5;
+
+    //bonus
+    private static float PowerBonus = 1f;
+    private static float PowerBonusDecrease = 0.05f;
+
+    //enlarge
+    private static Vector3 EnlargeSize = new Vector3(5, 5, 0);
+    private static float MassOriginal;
+    private static float MassChange = 2f;
+
+    //speedup
+    private static float SpeedOriginal = 15000f;
+    private static float SpeedUp = 25000f;
+    private static float SpeedCharge = SpeedOriginal * 70;
+    
 
 
-    public float SpeedOriginal = 15000f;
-    public float SpeedUp = 25000f;
+
+    /// <summary>
+    /// non-static parameters
+    /// </summary>
 
     private Rigidbody2D rb2d;
-    private bool isRotate;
-    private float angel;
-    private float[] statusTimeLeft;
-
     private Vector3 ScaleOriginal;
     private Vector3 ScaleEnlarged;
+
+    //status
+    //0:enlarge, 1:speedup, 2:reverse controller
+    private float[] statusTimeLeft = { 0, 0, 0 };
+    private float powerCount = 0f;
+    private float[] PowerLevels = { 1f, 3f, 5f };
+
+    //movement
+    private float angel;
     private float curSpeed;
+    private bool isRotate;
+    private bool isReversed;
+    private bool isCharge=false;
 
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
-        isRotate = true;
-        angel = 100;
-        statusTimeLeft = new float[2];
-
+        MassOriginal = rb2d.mass;
         ScaleOriginal = transform.localScale;
         ScaleEnlarged = ScaleOriginal + EnlargeSize;
 
+        angel = 100;
         curSpeed = SpeedOriginal;
+        isRotate = true;
+        isReversed = false;
+
+        powerCountText.text = powerCount.ToString();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isRotate)
+        if (powerCount > 0)
         {
-            transform.Rotate(0, 0, angel * Time.deltaTime);
+            powerCount -= Time.deltaTime * PowerBonusDecrease;
+            powerCount = Math.Max(powerCount, 0);
         }
+        setText();
 
-        //check for item status
+        PlayerRotation();
+
+        CheckStatusTime();
+
+    }
+
+    //check each status' left time
+    private void CheckStatusTime()
+    {
         for (int i = 0; i < statusTimeLeft.Length; i++)
         {
             statusTimeLeft[i] -= Time.deltaTime;
@@ -57,46 +99,51 @@ public class PlayerController : MonoBehaviour
                 {
                     case 0:
                         PlayerEnlarge(false);
-                        //speed *= SpeedChange;
                         break;
                     case 1:
                         PlayerSpeedUp(false);
                         break;
+                    case 2:
+                        PlayerControllerReverse(false);
+                        break;
                 }
-
             }
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        if (!isRotate)
+        PlayerMovement(curSpeed);
+    }
+
+    //control player rotation
+    private void PlayerRotation()
+    {
+        if (!isCharge && (isRotate != isReversed))
         {
-            rb2d.AddRelativeForce(new Vector2(0, 1) * curSpeed);
+            transform.Rotate(0, 0, angel * Time.deltaTime);
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    //control player movement
+    private void PlayerMovement(float speed)
+    {
+        if (isCharge || (isRotate == isReversed))
+        {
+            rb2d.AddRelativeForce(new Vector2(0, 1) * speed);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
 
-        if (other.tag == "Item_Enlarge")
+        if (other.tag == "PowerBonus")
         {
-            if (statusTimeLeft[0] <= 0)
-            {
-                PlayerEnlarge(true);
-            }
-            statusTimeLeft[0] = ItemDurationTime;
-
+            powerCount += PowerBonus;
             other.gameObject.SetActive(false);
         }
-        else if (other.tag == "Item_Speed")
+        else if (other.tag == "Trap")
         {
-            if (statusTimeLeft[1] <= 0)
-            {
-                PlayerSpeedUp(true);
-            }
-            statusTimeLeft[1] = ItemDurationTime;
-
             other.gameObject.SetActive(false);
         }
 
@@ -112,15 +159,75 @@ public class PlayerController : MonoBehaviour
         angel = -angel;
     }
 
-    public void PlayerEnlarge(bool isEnlarged)
+    private void PlayerEnlarge(bool isEnlarged)
     {
-        transform.localScale = isEnlarged ? ScaleEnlarged : ScaleOriginal;
+        if (isEnlarged)
+        {
+            transform.localScale = ScaleEnlarged;
+            rb2d.mass = MassOriginal * MassChange;
+        }
+        else
+        {
+            transform.localScale = ScaleOriginal;
+            rb2d.mass = MassOriginal;
+        }
     }
 
-    public void PlayerSpeedUp(bool isSpeedUp)
+    private void PlayerSpeedUp(bool isSpeedUp)
     {
-        curSpeed = isSpeedUp ? SpeedUp : SpeedOriginal;
+        if (isSpeedUp)
+        {
+            curSpeed = SpeedUp;
+        }
+        else
+        {
+            curSpeed = SpeedOriginal;
+        }
     }
 
+    private void PlayerCharge()
+    {
+        isCharge = true;
+        PlayerMovement(SpeedCharge);
+    }
+
+    private void PlayerControllerReverse(bool isReversed)
+    {
+        this.isReversed = isReversed;
+    }
+
+    public void skillHandler()
+    {
+        for (int i = PowerLevels.Length - 1; i >= 0; i--)
+        {
+            float thisLevel = PowerLevels[i];
+            if (powerCount >= thisLevel)
+            {
+                switch (i)
+                {
+                    case 0:
+                        statusTimeLeft[0] = StatusDurationTime;
+                        PlayerEnlarge(true);
+                        break;
+                    case 1:
+                        //statusTimeLeft[1] = StatusDurationTime;
+                        isCharge = true;
+                        PlayerCharge();
+                        isCharge = false;
+                        break;
+                    case 2:
+                        statusTimeLeft[2] = StatusDurationTime;
+                        PlayerControllerReverse(true);
+                        break;
+                }
+                return;
+            }
+        }
+    }
+
+    private void setText()
+    {
+        powerCountText.text = powerCount.ToString();
+    }
 
 }

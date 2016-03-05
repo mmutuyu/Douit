@@ -23,22 +23,25 @@ public class GameManager : MonoBehaviour
 
     public static int count1 = 0;
     public static int count2 = 0;
+
+    //basic set up
     public static GameManager instance = null;
     public GameObject[] PickUps;
     public SpriteRenderer spriteRender;
 
-    public float pi = (float)Math.PI;
+    private static float pi = (float)Math.PI;
+
+    //generate item
     private float radius;
     private Count spawnInterval = new Count(3f, 6f);
     private List<ItemController> itemsOnBoard;
-    private int MaxItemsOnBoard = 5;
+    private int MaxItemsOnBoard = 1;
     private float nextSpawnTime;
     private Vector3 boardCenter;
     private Vector3 boardSize;
 
     void Awake()
     {
-
         //Check if instance already exists
         if (instance == null)
         {
@@ -105,5 +108,5 @@ public class GameManager : MonoBehaviour
                 Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
         }
-    }
+    }    
 }
