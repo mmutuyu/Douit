@@ -220,6 +220,7 @@ public class PlayerController : MonoBehaviour
                         PlayerControllerReverse(true);
                         break;
                 }
+                powerCount = 0;
                 return;
             }
         }
