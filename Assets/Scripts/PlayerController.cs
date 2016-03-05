@@ -17,20 +17,23 @@ public class PlayerController : MonoBehaviour
     private static float StatusDurationTime = 5;
 
     //bonus
-    private static float PowerBonus = 1f;
+    private static int PowerBonus = 1;
     private static float PowerBonusDecrease = 0.05f;
+
+	private static float PowerDecrease = 0;
 
     //enlarge
     private static Vector3 EnlargeSize = new Vector3(5, 5, 0);
     private static float MassOriginal;
-    private static float MassChange = 2f;
+    private static float MassChange = 3f;
 
     //speedup
-    private static float SpeedOriginal = 15000f;
-    private static float SpeedUp = 25000f;
+    private static float SpeedOriginal = 18000f;
+	private static float SpeedUp = 25000f;
+    private static float SpeedChange = 2f;
     private static float SpeedCharge = SpeedOriginal * 70;
     
-
+	public GameObject Opponent;
 
 
     /// <summary>
@@ -44,8 +47,8 @@ public class PlayerController : MonoBehaviour
     //status
     //0:enlarge, 1:speedup, 2:reverse controller
     private float[] statusTimeLeft = { 0, 0, 0 };
-    private float powerCount = 0f;
-    private float[] PowerLevels = { 1f, 3f, 5f };
+    private int powerCount = 3;
+    private int[] PowerLevels = { 1, 3, 5 };
 
     //movement
     private float angel;
@@ -61,7 +64,7 @@ public class PlayerController : MonoBehaviour
         ScaleOriginal = transform.localScale;
         ScaleEnlarged = ScaleOriginal + EnlargeSize;
 
-        angel = 100;
+        angel = 180;
         curSpeed = SpeedOriginal;
         isRotate = true;
         isReversed = false;
@@ -72,10 +75,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (powerCount > 0)
-        {
-            powerCount -= Time.deltaTime * PowerBonusDecrease;
-            powerCount = Math.Max(powerCount, 0);
+		if (powerCount>0)
+		{	
+			PowerDecrease+=Time.deltaTime * PowerBonusDecrease;
+			if (PowerDecrease >= 1) {
+				powerCount --;
+				powerCount = Math.Max(powerCount, 0);
+				PowerDecrease = 0;
+			}
         }
         setText();
 
@@ -101,7 +108,7 @@ public class PlayerController : MonoBehaviour
                         PlayerEnlarge(false);
                         break;
                     case 1:
-                        PlayerSpeedUp(false);
+                        //PlayerSpeedUp(false);
                         break;
                     case 2:
                         PlayerControllerReverse(false);
@@ -163,16 +170,20 @@ public class PlayerController : MonoBehaviour
     {
         if (isEnlarged)
         {
+			statusTimeLeft[0] = StatusDurationTime;
             transform.localScale = ScaleEnlarged;
             rb2d.mass = MassOriginal * MassChange;
+			curSpeed = SpeedOriginal * SpeedChange;
         }
         else
         {
             transform.localScale = ScaleOriginal;
             rb2d.mass = MassOriginal;
+			curSpeed = SpeedOriginal;
         }
     }
 
+	/*
     private void PlayerSpeedUp(bool isSpeedUp)
     {
         if (isSpeedUp)
@@ -184,6 +195,7 @@ public class PlayerController : MonoBehaviour
             curSpeed = SpeedOriginal;
         }
     }
+    */
 
     private void PlayerCharge()
     {
@@ -193,20 +205,22 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerControllerReverse(bool isReversed)
     {
-        this.isReversed = isReversed;
+		if (isReversed) {
+			statusTimeLeft[2] = StatusDurationTime;
+		}
+		this.isReversed = isReversed;
     }
 
     public void skillHandler()
     {
         for (int i = PowerLevels.Length - 1; i >= 0; i--)
         {
-            float thisLevel = PowerLevels[i];
+            int thisLevel = PowerLevels[i];
             if (powerCount >= thisLevel)
             {
                 switch (i)
                 {
-                    case 0:
-                        statusTimeLeft[0] = StatusDurationTime;
+                    case 0:                        
                         PlayerEnlarge(true);
                         break;
                     case 1:
@@ -216,10 +230,10 @@ public class PlayerController : MonoBehaviour
                         isCharge = false;
                         break;
                     case 2:
-                        statusTimeLeft[2] = StatusDurationTime;
-                        PlayerControllerReverse(true);
+						Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
                         break;
                 }
+                powerCount = 0;
                 return;
             }
         }
