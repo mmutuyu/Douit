@@ -17,11 +17,9 @@ public class PlayerController : MonoBehaviour
     private static float StatusDurationTime = 5;
 
     //bonus
-    private static float PowerBonus = 1;
-    private static float PowerBonusDecreasePerSecond = 0.05f;
-    private static float PowerBonusDecreaseCoolDown = 5f;
-
-    //private static float PowerDecrease = 0;
+    private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
+    private static float PowerBonusDecreaseCoolDown = 5f;       //bonus start to decrease after how long the player pick up last item
+    private static float PowerBonusMaxRange = 10f;
 
     //enlarge
     private static Vector3 EnlargeSize = new Vector3(5, 5, 0);
@@ -31,7 +29,6 @@ public class PlayerController : MonoBehaviour
     //speed
     private static float SpeedOriginal = 18000f;
     private static float FrictionScale = 16800f;
-    //private static float SpeedUp = 25000f;
     private static float SpeedChange = 2f;
     private static float SpeedCharge = SpeedOriginal * 70;
 
@@ -83,15 +80,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (powerCount > 0)
-        {
-            /*
-			PowerDecrease+=Time.deltaTime * PowerBonusDecrease;
-			if (PowerDecrease >= 1) {
-				powerCount --;
-				powerCount = Math.Max(powerCount, 0);
-				PowerDecrease = 0;
-			}
-            */
+        {            
             decreaseCoolDown = Math.Max(decreaseCoolDown - Time.deltaTime, 0);
             if (decreaseCoolDown == 0)
             {
@@ -126,7 +115,6 @@ public class PlayerController : MonoBehaviour
                         PlayerControllerReverse(false);
                         break;
                     case 3:
-
                         break;
                 }
             }
@@ -160,17 +148,22 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
 
-        if (other.tag == "PowerBonus")
+        if (other.tag == "PowerBonusLow")
         {
-            powerCount += PowerBonus;
-            decreaseCoolDown = PowerBonusDecreaseCoolDown;
-            other.gameObject.SetActive(false);
+            PickUpItem(other);
         }
-        else if (other.tag == "Trap")
+        else if (other.tag == "PowerBonusMid")
         {
-            other.gameObject.SetActive(false);
+            PickUpItem(other);
         }
 
+    }
+
+    private void PickUpItem(Collider2D other)
+    {
+        powerCount = Math.Min(powerCount + other.GetComponent<ItemController>().bonus, PowerBonusMaxRange);
+        decreaseCoolDown = PowerBonusDecreaseCoolDown;
+        other.gameObject.SetActive(false);
     }
 
     public void ChangeRotationStatus()
@@ -199,20 +192,7 @@ public class PlayerController : MonoBehaviour
             curSpeed = SpeedOriginal;
         }
     }
-
-    /*
-    private void PlayerSpeedUp(bool isSpeedUp)
-    {
-        if (isSpeedUp)
-        {
-            curSpeed = SpeedUp;
-        }
-        else
-        {
-            curSpeed = SpeedOriginal;
-        }
-    }
-    */
+    
 
     private void PlayerCharge()
     {

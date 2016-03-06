@@ -3,11 +3,12 @@
 public class ItemController : MonoBehaviour
 {
 
+    public float bonus;
+
     private static float ItemDisappearTime = 10f;
-    private static float ItemRotTime = 5f;
 
     private float timeLeft;
-
+    
     void Start()
     {
         GameManager.instance.addItemToList(this);
@@ -28,4 +29,5 @@ public class ItemController : MonoBehaviour
     {
         GameManager.instance.removeItemFromList(this);
     }
+    
 }
