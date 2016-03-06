@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     //generate item
     private float radius;
-    private static float[] ItemProbability = { 0f, 0.75f, 0.95f };
+    private static float[] ItemProbability = { 0f, 0.85f, 0.95f };
     private Count spawnInterval = new Count(4f, 5f);
     private List<ItemController> itemsOnBoard;
     private int MaxItemsOnBoard = 3;
