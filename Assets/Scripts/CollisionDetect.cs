@@ -30,7 +30,7 @@ public class CollisionDetect : MonoBehaviour
         //winLose.text = "";
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerExit2D(Collider2D other)
     {
         //core collider will cause win/fail detect
         if (other.GetType().ToString().Equals("UnityEngine.BoxCollider2D"))
