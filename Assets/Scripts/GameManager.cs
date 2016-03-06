@@ -108,5 +108,5 @@ public class GameManager : MonoBehaviour
                 Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
         }
-    }    
+    }
 }
