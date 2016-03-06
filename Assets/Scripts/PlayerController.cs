@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
     private static float PowerBonusDecreaseCoolDown = 5f;       //bonus start to decrease after how long the player pick up last item
-    private static float PowerBonusMaxRange = 10f;
+    private static float PowerBonusMaxRange = 5f;
 
     //enlarge
     private static Vector3 EnlargeSize = new Vector3(5, 5, 0);
