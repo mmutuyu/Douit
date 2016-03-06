@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
 
     //generate item
     private float radius;
+    private static float[] ItemProbability = { 0f, 0.75f, 0.95f };
     private Count spawnInterval = new Count(4f, 5f);
     private List<ItemController> itemsOnBoard;
     private int MaxItemsOnBoard = 3;
@@ -96,14 +97,19 @@ public class GameManager : MonoBehaviour
                     r = (float)Math.Sqrt(Random.Range(0f, 1f)) * radius;
                     x = r * (float)Math.Cos(theta);
                     y = r * (float)Math.Sin(theta);
-                    toInstantiate = PickUps[Random.Range(0, PickUps.Length)];
+                    float p = Random.Range(0f, 1f);
+                    Debug.Log("p:" + p);
+                    for (int i = PickUps.Length - 1; i >= 0; i--)
+                    {
+                        if (p >= ItemProbability[i])
+                        {
+                            toInstantiate = PickUps[i];
+                            Debug.Log("i:" + i);
+                            break;
+                        }
+                    }
                     colliderRadius = toInstantiate.transform.localScale.x * toInstantiate.GetComponent<CircleCollider2D>().radius;
                     instantiatePosition = boardCenter + new Vector3(x, y, 0);
-                    if (Physics2D.OverlapCircle(instantiatePosition, colliderRadius) != null)
-                    {
-                        Collider2D hit = Physics2D.OverlapCircle(instantiatePosition, colliderRadius);
-                        Debug.Log("pos:" + instantiatePosition + " and radius:" + colliderRadius + " has Collision:" + hit.gameObject.transform.localPosition);
-                    }
                 }
                 Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
