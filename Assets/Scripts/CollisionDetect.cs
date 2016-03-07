@@ -52,8 +52,6 @@ public class CollisionDetect : MonoBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         //core collider will cause win/fail detect
-        if (other.GetType().ToString().Equals("UnityEngine.BoxCollider2D"))
-        {
             if (other.tag == "Player1")
             {
 				GameManager.count1 += 1;
@@ -76,7 +74,6 @@ public class CollisionDetect : MonoBehaviour
                 SetCountToZero("White Win");
             }
             Application.LoadLevel(Application.loadedLevel);
-        }
     }
 
 //	void Pause()

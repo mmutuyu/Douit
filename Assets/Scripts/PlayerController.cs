@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
     //status
     //0:enlarge, 1:speedup, 2:reverse controller， 3:not rotation time
     private float[] statusTimeLeft = { 0, 0, 0, 0 };
-    private float powerCount = 4f;
+    private float powerCount = 0f;
     private int[] PowerLevels = { 0, 2, 4 };
 
     //movement
