@@ -16,6 +16,9 @@ public class StarBar1 : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		if (Time.timeScale == 0) {
+			return;
+		}
 		HandleBar ();
 	}
 
