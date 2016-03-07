@@ -56,14 +56,7 @@ public class CollisionDetect : MonoBehaviour
             if (other.tag == "Player1")
             {
 				GameManager.count1 += 1;
-<<<<<<< HEAD
-
 				Application.LoadLevel(Application.loadedLevel);
-
-=======
-//				Time.timeScale = 0;
-//				timeleft = 5;
->>>>>>> master
             }
             if (other.tag == "Player2")
             {
@@ -80,13 +73,8 @@ public class CollisionDetect : MonoBehaviour
             {
                 //white win
                 SetCountToZero("Blue Win");
-            }
-<<<<<<< HEAD
-            
+            }          
         }
-=======
-            Application.LoadLevel(Application.loadedLevel);
->>>>>>> master
     }
 
 //	void Pause()
@@ -94,4 +82,4 @@ public class CollisionDetect : MonoBehaviour
 //		Time.timeScale = 0;
 //		stoptime = Time.realtimeSinceStartup;
 //	}
-}
+
