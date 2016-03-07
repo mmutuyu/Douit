@@ -37,7 +37,7 @@ public class CollisionDetect : MonoBehaviour
         {
             if (other.tag == "Player1")
             {
-                GameManager.count1 += 1;
+				GameManager.count1 += 1;
             }
             if (other.tag == "Player2")
             {

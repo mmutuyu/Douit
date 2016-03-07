@@ -237,4 +237,8 @@ public class PlayerController : MonoBehaviour
         powerCountText.text = powerCount.ToString();
     }
 
+	public float getPowerCount(){
+		return (float)Math.Ceiling(powerCount);
+	}
+
 }
