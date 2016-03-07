@@ -1,9 +1,10 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class MyFunction : MonoBehaviour {
 
-	public void loadScene(){
-		Application.LoadLevel("Main");
-	}
+	public void loadScene()
+    {
+        SceneManager.LoadScene("Main");
+    }
 }
