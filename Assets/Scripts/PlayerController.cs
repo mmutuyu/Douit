@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
 
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
+    private static float PowerBonusMinRange = 0f;
     private static float PowerBonusMaxRange = 5f;
 
     //enlarge
@@ -154,7 +155,9 @@ public class PlayerController : MonoBehaviour
 
     private void PickUpItem(Collider2D other)
     {
-        powerCount = Math.Min(powerCount + other.GetComponent<ItemController>().getBonus(), PowerBonusMaxRange);
+        powerCount += other.GetComponent<ItemController>().getBonus();
+        powerCount = Math.Max(powerCount, PowerBonusMinRange);
+        powerCount = Math.Min(powerCount, PowerBonusMaxRange);
         other.gameObject.SetActive(false);
     }
 
