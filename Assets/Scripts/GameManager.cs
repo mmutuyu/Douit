@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     //basic set up
     public static GameManager instance = null;
     public GameObject[] PickUps;
-	public GameObject BackGround;
+    public GameObject BackGround;
 
     private static float pi = (float)Math.PI;
 
@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-		SpriteRenderer sr = BackGround.GetComponent<SpriteRenderer> ();
+        SpriteRenderer sr = BackGround.GetComponent<SpriteRenderer>();
         boardCenter = sr.bounds.center;
         boardSize = sr.bounds.size;
         radius = boardSize.x / 3;
@@ -91,11 +91,11 @@ public class GameManager : MonoBehaviour
                 float x = 0, y = 0, r = 0, colliderRadius = 0;
                 GameObject toInstantiate = null;
                 Vector3 instantiatePosition = new Vector3();
-				CircleCollider2D BackGroundCollider = BackGround.GetComponent<CircleCollider2D> ();
-				bool isValidPosition = false;
-                while (toInstantiate == null && !isValidPosition)
+                CircleCollider2D BackGroundCollider = BackGround.GetComponent<CircleCollider2D>();
+                bool isValidPosition = false;
+                while (toInstantiate == null || !isValidPosition)
                 {
-					nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
+                    nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
                     float theta = Random.Range(0f, 2f * pi);
                     r = (float)Math.Sqrt(Random.Range(0f, 1f)) * radius;
                     x = r * (float)Math.Cos(theta);
@@ -112,8 +112,8 @@ public class GameManager : MonoBehaviour
                     colliderRadius = toInstantiate.transform.localScale.x * toInstantiate.GetComponent<CircleCollider2D>().radius;
                     instantiatePosition = boardCenter + new Vector3(x, y, 0);
 
-					Collider2D[] hits = Physics2D.OverlapCircleAll (instantiatePosition, colliderRadius);
-					isValidPosition = hits.Length==1 && hits[0]==BackGroundCollider;
+                    Collider2D[] hits = Physics2D.OverlapCircleAll(instantiatePosition, colliderRadius);
+                    isValidPosition = hits.Length == 1 && hits[0] == BackGroundCollider;
                 }
                 Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
