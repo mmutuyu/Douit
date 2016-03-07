@@ -25,7 +25,8 @@ public class CollisionDetect : MonoBehaviour
     {
         GameManager.count1 = 0;
         GameManager.count2 = 0;
-        winLose.text = whowin;
+		MyValue.str = whowin;
+		Application.LoadLevel ("finish");
         //yield return new WaitForSeconds(5);
         //winLose.text = "";
     }
@@ -38,10 +39,12 @@ public class CollisionDetect : MonoBehaviour
             if (other.tag == "Player1")
             {
 				GameManager.count1 += 1;
+				Application.LoadLevel(Application.loadedLevel);
             }
             if (other.tag == "Player2")
             {
                 GameManager.count2 += 1;
+				Application.LoadLevel(Application.loadedLevel);
             }
             SetTxt();
             if (GameManager.count1 >= 5)
@@ -52,9 +55,9 @@ public class CollisionDetect : MonoBehaviour
             else if (GameManager.count2 >= 5)
             {
                 //white win
-                SetCountToZero("White Win");
+                SetCountToZero("Blue Win");
             }
-            Application.LoadLevel(Application.loadedLevel);
+            
         }
     }
 }
