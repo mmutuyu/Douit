@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
 
     public Text powerCountText;
+    public Text attackButtonText;
 
     /// <summary>
     /// static parameters
@@ -15,6 +16,7 @@ public class PlayerController : MonoBehaviour
 
     //skill
     private static float StatusDurationTime = 5;
+    private static String[] AttackButtonTextList = { "None", "GiantGrowth", "Charge", "Confuse" };
 
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
@@ -78,9 +80,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		if (Time.timeScale == 0) {
-			return;
-		}
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
         if (powerCount > 0)
         {
             powerCount = Math.Max(powerCount - Time.deltaTime * PowerBonusDecreasePerSecond, 0);
@@ -91,6 +94,26 @@ public class PlayerController : MonoBehaviour
 
         CheckStatusTime();
 
+        SetAttackButtonText();
+    }
+
+    private int SkillLevel()
+    {
+        for (int i = PowerLevels.Length - 1; i >= 0; i--)
+        {
+            int thisLevel = PowerLevels[i];
+            if (powerCount > thisLevel)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void SetAttackButtonText()
+    {
+
+        attackButtonText.text = AttackButtonTextList[SkillLevel() + 1];
     }
 
     //check each status' left time
@@ -207,32 +230,25 @@ public class PlayerController : MonoBehaviour
         this.isReversed = isReversed;
     }
 
-    public void skillHandler()
+    public void SkillHandler()
     {
-        for (int i = PowerLevels.Length - 1; i >= 0; i--)
+        switch (SkillLevel())
         {
-            int thisLevel = PowerLevels[i];
-            if (powerCount > thisLevel)
-            {
-                switch (i)
-                {
-                    case 0:
-                        PlayerEnlarge(true);
-                        break;
-                    case 1:
-                        isCharge = true;
-                        statusTimeLeft[3] = chargeTime;
-                        PlayerCharge();
-                        isCharge = false;
-                        break;
-                    case 2:
-                        Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
-                        break;
-                }
-                powerCount = 0;
-                return;
-            }
+            case 0:
+                PlayerEnlarge(true);
+                break;
+            case 1:
+                isCharge = true;
+                statusTimeLeft[3] = chargeTime;
+                PlayerCharge();
+                isCharge = false;
+                break;
+            case 2:
+                Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
+                break;
         }
+        powerCount = 0;
+        return;
     }
 
     private void setText()
@@ -240,8 +256,9 @@ public class PlayerController : MonoBehaviour
         powerCountText.text = powerCount.ToString();
     }
 
-	public float getPowerCount(){
-		return (float)Math.Ceiling(powerCount);
-	}
+    public float getPowerCount()
+    {
+        return (float)Math.Ceiling(powerCount);
+    }
 
 }
