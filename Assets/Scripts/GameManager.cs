@@ -101,21 +101,19 @@ public class GameManager : MonoBehaviour
                     x = r * (float)Math.Cos(theta);
                     y = r * (float)Math.Sin(theta);
                     float p = Random.Range(0f, 1f);
-                    Debug.Log("p:" + p);
                     for (int i = PickUps.Length - 1; i >= 0; i--)
                     {
                         if (p >= ItemProbability[i])
                         {
                             toInstantiate = PickUps[i];
-                            Debug.Log("i:" + i);
                             break;
                         }
                     }
                     colliderRadius = toInstantiate.transform.localScale.x * toInstantiate.GetComponent<CircleCollider2D>().radius;
                     instantiatePosition = boardCenter + new Vector3(x, y, 0);
 
-					Collider2D hit = Physics2D.OverlapCircle (instantiatePosition, colliderRadius);
-					isValidPosition = hit == null || hit == BackGroundCollider;
+					Collider2D[] hits = Physics2D.OverlapCircleAll (instantiatePosition, colliderRadius);
+					isValidPosition = hits.Length==1 && hits[0]==BackGroundCollider;
                 }
                 Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
