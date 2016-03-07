@@ -27,12 +27,13 @@ public class GameManager : MonoBehaviour
     //basic set up
     public static GameManager instance = null;
     public GameObject[] PickUps;
-    public SpriteRenderer spriteRender;
+    public GameObject BackGround;
 
     private static float pi = (float)Math.PI;
 
     //generate item
     private float radius;
+    private static float[] ItemProbability = { 0f, 0.85f, 0.95f };
     private Count spawnInterval = new Count(4f, 5f);
     private List<ItemController> itemsOnBoard;
     private int MaxItemsOnBoard = 3;
@@ -59,8 +60,9 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        boardCenter = spriteRender.bounds.center;
-        boardSize = spriteRender.bounds.size;
+        SpriteRenderer sr = BackGround.GetComponent<SpriteRenderer>();
+        boardCenter = sr.bounds.center;
+        boardSize = sr.bounds.size;
         radius = boardSize.x / 3;
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
@@ -89,24 +91,33 @@ public class GameManager : MonoBehaviour
                 float x = 0, y = 0, r = 0, colliderRadius = 0;
                 GameObject toInstantiate = null;
                 Vector3 instantiatePosition = new Vector3();
-                while (toInstantiate == null || Physics2D.OverlapCircle(instantiatePosition, colliderRadius) != null)
+                CircleCollider2D BackGroundCollider = BackGround.GetComponent<CircleCollider2D>();
+                bool isValidPosition = false;
+                while (toInstantiate == null || !isValidPosition)
                 {
                     nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
                     float theta = Random.Range(0f, 2f * pi);
                     r = (float)Math.Sqrt(Random.Range(0f, 1f)) * radius;
                     x = r * (float)Math.Cos(theta);
                     y = r * (float)Math.Sin(theta);
-                    toInstantiate = PickUps[Random.Range(0, PickUps.Length)];
+                    float p = Random.Range(0f, 1f);
+                    for (int i = PickUps.Length - 1; i >= 0; i--)
+                    {
+                        if (p >= ItemProbability[i])
+                        {
+                            toInstantiate = PickUps[i];
+                            break;
+                        }
+                    }
                     colliderRadius = toInstantiate.transform.localScale.x * toInstantiate.GetComponent<CircleCollider2D>().radius;
                     instantiatePosition = boardCenter + new Vector3(x, y, 0);
-                    if (Physics2D.OverlapCircle(instantiatePosition, colliderRadius) != null)
-                    {
-                        Collider2D hit = Physics2D.OverlapCircle(instantiatePosition, colliderRadius);
-                        Debug.Log("pos:" + instantiatePosition + " and radius:" + colliderRadius + " has Collision:" + hit.gameObject.transform.localPosition);
-                    }
+
+                    Collider2D[] hits = Physics2D.OverlapCircleAll(instantiatePosition, colliderRadius);
+                    isValidPosition = hits.Length == 1 && hits[0] == BackGroundCollider;
                 }
                 Instantiate(toInstantiate, instantiatePosition, Quaternion.identity);
             }
         }
-    }    
+    }
+
 }
