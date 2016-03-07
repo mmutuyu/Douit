@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
 
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
-    private static float PowerBonusDecreaseCoolDown = 5f;       //bonus start to decrease after how long the player pick up last item
     private static float PowerBonusMaxRange = 5f;
 
     //enlarge
@@ -47,8 +46,7 @@ public class PlayerController : MonoBehaviour
     //0:enlarge, 1:speedup, 2:reverse controller， 3:not rotation time
     private float[] statusTimeLeft = { 0, 0, 0, 0 };
     private float powerCount = 4f;
-    private float decreaseCoolDown = 0f;
-    private int[] PowerLevels = { 1, 3, 5 };
+    private int[] PowerLevels = { 0, 2, 4 };
 
     //movement
     private float friction;
@@ -80,13 +78,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (powerCount > 0)
-        {            
-            decreaseCoolDown = Math.Max(decreaseCoolDown - Time.deltaTime, 0);
-            if (decreaseCoolDown == 0)
-            {
-                powerCount -= Time.deltaTime * PowerBonusDecreasePerSecond;
-                powerCount = Math.Max(powerCount, 0);
-            }
+        {
+            powerCount = Math.Max(powerCount - Time.deltaTime * PowerBonusDecreasePerSecond, 0);
         }
         setText();
 
@@ -161,8 +154,7 @@ public class PlayerController : MonoBehaviour
 
     private void PickUpItem(Collider2D other)
     {
-        powerCount = Math.Min(powerCount + other.GetComponent<ItemController>().bonus, PowerBonusMaxRange);
-        decreaseCoolDown = PowerBonusDecreaseCoolDown;
+        powerCount = Math.Min(powerCount + other.GetComponent<ItemController>().getBonus(), PowerBonusMaxRange);
         other.gameObject.SetActive(false);
     }
 
@@ -192,7 +184,7 @@ public class PlayerController : MonoBehaviour
             curSpeed = SpeedOriginal;
         }
     }
-    
+
 
     private void PlayerCharge()
     {
@@ -214,7 +206,7 @@ public class PlayerController : MonoBehaviour
         for (int i = PowerLevels.Length - 1; i >= 0; i--)
         {
             int thisLevel = PowerLevels[i];
-            if (powerCount >= thisLevel)
+            if (powerCount > thisLevel)
             {
                 switch (i)
                 {
