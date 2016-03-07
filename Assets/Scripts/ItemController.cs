@@ -21,6 +21,10 @@ public class ItemController : MonoBehaviour
     //Update is called every frame
     void Update()
     {
+		if (Time.timeScale == 0) {
+			return;
+		}
+
         timeLeft -= Time.deltaTime;
         if (timeLeft <= 0)
         {
