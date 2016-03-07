@@ -9,10 +9,29 @@ public class CollisionDetect : MonoBehaviour
     public Text countTxt2;
     public Text winLose;
 
+	private float stoptime;
+	private float freezetime;
+
+
     void Start()
     {
         SetTxt();
+
     }
+
+//	void Awake()
+//	{
+//		Pause ();
+//	}
+
+	void Update()
+	{
+		
+//		if (Time.realtimeSinceStartup - stoptime >= 3) 
+//		{
+//			Time.timeScale = 1;
+//		}
+	}
 
     void SetTxt()
     {
@@ -39,7 +58,9 @@ public class CollisionDetect : MonoBehaviour
             if (other.tag == "Player1")
             {
 				GameManager.count1 += 1;
+
 				Application.LoadLevel(Application.loadedLevel);
+
             }
             if (other.tag == "Player2")
             {
@@ -60,4 +81,10 @@ public class CollisionDetect : MonoBehaviour
             
         }
     }
+
+//	void Pause()
+//	{
+//		Time.timeScale = 0;
+//		stoptime = Time.realtimeSinceStartup;
+//	}
 }

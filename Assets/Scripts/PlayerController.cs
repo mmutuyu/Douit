@@ -78,6 +78,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+		if (Time.timeScale == 0) {
+			return;
+		}
         if (powerCount > 0)
         {
             powerCount = Math.Max(powerCount - Time.deltaTime * PowerBonusDecreasePerSecond, 0);
