@@ -4,8 +4,11 @@ public class ItemController : MonoBehaviour
 {
 
     public float bonus;
+    public float punish;
+    public Sprite rotSprite;
 
-    private static float ItemDisappearTime = 10f;
+    public float ItemDisappearTime;
+    public float ItemRotTime;
 
     private float timeLeft;
     
@@ -23,7 +26,16 @@ public class ItemController : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+        else if (timeLeft <= ItemRotTime) {
+            GetComponent<SpriteRenderer>().sprite = rotSprite;
+        }
     }
+
+    public float getBonus() {
+        return timeLeft <= ItemRotTime ? punish : bonus;
+    }
+
+
 
     void OnDisable()
     {
