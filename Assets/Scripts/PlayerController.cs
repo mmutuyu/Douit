@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-
-    public Text powerCountText;
-    public Text attackButtonText;
-
     /// <summary>
     /// static parameters
     /// </summary>
@@ -16,17 +12,16 @@ public class PlayerController : MonoBehaviour
 
     //skill
     private static float StatusDurationTime = 5;
-    private static String[] AttackButtonTextList = { "None", "GiantGrowth", "Charge", "Confuse" };
 
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
-    private static float PowerBonusMinRange = 0f;
-    private static float PowerBonusMaxRange = 5f;
+    public static int POWER_MIN_RANGE = 0;
+    public static int POWER_MAX_RANGE = 5;
 
     //enlarge
-    private static Vector3 EnlargeSize = new Vector3(5, 5, 0);
-    private static float MassOriginal;
-    private static float MassChange = 3f;
+    private static Vector3 ENLARGE_SIZE = new Vector3(5, 5, 0);
+    private static float MASS_ORIGINAL;
+    private static float MASS_ENLARGE = 3f;
 
     //speed
     private static float SpeedOriginal = 18000f;
@@ -63,9 +58,9 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
-        MassOriginal = rb2d.mass;
+        MASS_ORIGINAL = rb2d.mass;
         ScaleOriginal = transform.localScale;
-        ScaleEnlarged = ScaleOriginal + EnlargeSize;
+        ScaleEnlarged = ScaleOriginal + ENLARGE_SIZE;
 
         friction = rb2d.drag;
         chargeTime = SpeedCharge * Time.fixedDeltaTime / friction / FrictionScale;
@@ -74,7 +69,7 @@ public class PlayerController : MonoBehaviour
         isRotate = true;
         isReversed = false;
 
-        powerCountText.text = powerCount.ToString();
+        //powerCountText.text = powerCount.ToString();
     }
 
     // Update is called once per frame
@@ -97,7 +92,7 @@ public class PlayerController : MonoBehaviour
         SetAttackButtonText();
     }
 
-    private int SkillLevel()
+    public int getSkillLevel()
     {
         for (int i = PowerLevels.Length - 1; i >= 0; i--)
         {
@@ -113,7 +108,7 @@ public class PlayerController : MonoBehaviour
     private void SetAttackButtonText()
     {
 
-        attackButtonText.text = AttackButtonTextList[SkillLevel() + 1];
+        //attackButtonText.text = AttackButtonTextList[SkillLevel() + 1];
     }
 
     //check each status' left time
@@ -182,8 +177,8 @@ public class PlayerController : MonoBehaviour
     private void PickUpItem(Collider2D other)
     {
         powerCount += other.GetComponent<ItemController>().getBonus();
-        powerCount = Math.Max(powerCount, PowerBonusMinRange);
-        powerCount = Math.Min(powerCount, PowerBonusMaxRange);
+        powerCount = Math.Max(powerCount, POWER_MIN_RANGE);
+        powerCount = Math.Min(powerCount, POWER_MAX_RANGE);
         other.gameObject.SetActive(false);
     }
 
@@ -203,13 +198,13 @@ public class PlayerController : MonoBehaviour
         {
             statusTimeLeft[0] = StatusDurationTime;
             transform.localScale = ScaleEnlarged;
-            rb2d.mass = MassOriginal * MassChange;
+            rb2d.mass = MASS_ORIGINAL * MASS_ENLARGE;
             curSpeed = SpeedOriginal * SpeedChange;
         }
         else
         {
             transform.localScale = ScaleOriginal;
-            rb2d.mass = MassOriginal;
+            rb2d.mass = MASS_ORIGINAL;
             curSpeed = SpeedOriginal;
         }
     }
@@ -232,7 +227,7 @@ public class PlayerController : MonoBehaviour
 
     public void SkillHandler()
     {
-        switch (SkillLevel())
+        switch (getSkillLevel())
         {
             case 0:
                 PlayerEnlarge(true);
@@ -253,12 +248,12 @@ public class PlayerController : MonoBehaviour
 
     private void setText()
     {
-        powerCountText.text = powerCount.ToString();
+        //powerCountText.text = powerCount.ToString();
     }
 
-    public float getPowerCount()
+    public int getPowerCount()
     {
-        return (float)Math.Ceiling(powerCount);
+        return (int)Math.Ceiling(powerCount);
     }
 
 }

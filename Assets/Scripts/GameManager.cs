@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 
 public class GameManager : MonoBehaviour
@@ -21,13 +22,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public GameObject[] players;
+    public static int[] score = { 0, 0 };
     public static int count1 = 0;
     public static int count2 = 0;
+
+    public static int WIN_SCORE = 1;
 
     //basic set up
     public static GameManager instance = null;
     public GameObject[] PickUps;
-    public GameObject BackGround;
 
     private static float pi = (float)Math.PI;
 
@@ -55,15 +59,17 @@ public class GameManager : MonoBehaviour
             //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
             Destroy(gameObject);
         }
+
     }
 
     // Use this for initialization
     void Start()
     {
-        SpriteRenderer sr = BackGround.GetComponent<SpriteRenderer>();
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
         boardCenter = sr.bounds.center;
         boardSize = sr.bounds.size;
         radius = boardSize.x / 3;
+
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
@@ -79,6 +85,7 @@ public class GameManager : MonoBehaviour
         itemsOnBoard.Remove(item);
     }
 
+
     // Update is called once per frame
     void Update()
     {
@@ -91,7 +98,7 @@ public class GameManager : MonoBehaviour
                 float x = 0, y = 0, r = 0, colliderRadius = 0;
                 GameObject toInstantiate = null;
                 Vector3 instantiatePosition = new Vector3();
-                CircleCollider2D BackGroundCollider = BackGround.GetComponent<CircleCollider2D>();
+                CircleCollider2D BackGroundCollider = GetComponent<CircleCollider2D>();
                 bool isValidPosition = false;
                 while (toInstantiate == null || !isValidPosition)
                 {
@@ -120,4 +127,40 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void OnTriggerExit2D(Collider2D other)
+    {
+        //core collider will cause win/fail detect
+        if (other.tag == "Player1")
+        {
+            score[1] += 1;
+            SceneManager.LoadScene("Main");
+        }
+        if (other.tag == "Player2")
+        {
+            score[0] += 1;
+            SceneManager.LoadScene("Main");
+        }
+        if (score[0] >= WIN_SCORE)
+        {
+            //red win
+            SetCountToZero("Blue Win!");
+        }
+        else if (score[1] >= WIN_SCORE)
+        {
+            //white win
+            SetCountToZero("Red Win");
+        }
+    }
+
+    void SetCountToZero(string winner)
+    {
+        score = new int[] { 0, 0 };
+        WinMenuController.WinLose = winner;
+        SceneManager.LoadScene("Win");
+    }
+
+    public void startNewGame()
+    {
+        SceneManager.LoadScene("Main");
+    }
 }

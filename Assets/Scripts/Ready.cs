@@ -4,7 +4,7 @@ using System.Collections;
 public class Ready : MonoBehaviour {
 
 	private float stoptime;
-	private float freezetime;
+	private static float FREEZE_TIME=2f;
 
 	// Use this for initialization
 	void Start () {
@@ -18,7 +18,7 @@ public class Ready : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (Time.realtimeSinceStartup - stoptime >= 1) 
+		if (Time.realtimeSinceStartup - stoptime >= FREEZE_TIME) 
 		{
 			Time.timeScale = 1;
 			gameObject.SetActive (false);
