@@ -9,8 +9,6 @@ public class WinMenuController : MonoBehaviour
 
     public Text WinLoseText;
 
-    public static string WinLose = "";
-
     public static WinMenuController instance = null;
 
     void Awake()
@@ -39,7 +37,7 @@ public class WinMenuController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        WinLoseText.text = WinLose;
+        WinLoseText.text = PlayerPrefs.GetString("Winner");
     }
 
     public void startNewGame()

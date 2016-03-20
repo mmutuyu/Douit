@@ -36,7 +36,7 @@ public class UIManager : MonoBehaviour
 
             setEnergyBar(EnergyBar[i], (float)script.getPowerCount() / PlayerController.POWER_MAX_RANGE);
 
-            setStarBar(StarBar[i], (float)GameManager.score[i] / GameManager.WIN_SCORE);
+            setStarBar(StarBar[i], (float)PlayerPrefs.GetInt(GameManager.SCORE_STR[i]) / GameManager.WIN_SCORE);
 
             setAttackButtonText(AttackButtonText[i], script.getSkillLevel());
         }
