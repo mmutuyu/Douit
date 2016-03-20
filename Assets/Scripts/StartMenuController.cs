@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 public class StartMenuController : MonoBehaviour
 {
 
+    void Awake() {
+        PlayerPrefs.DeleteAll();
+    }
+
     // Use this for initialization
     void Start()
     {

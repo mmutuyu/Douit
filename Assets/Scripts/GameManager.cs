@@ -23,9 +23,7 @@ public class GameManager : MonoBehaviour
     }
 
     public GameObject[] players;
-    public static int[] score = { 0, 0 };
-    public static int count1 = 0;
-    public static int count2 = 0;
+    public static string[] SCORE_STR = { "Player1_Score", "Player2_Score"};
 
     public static int WIN_SCORE = 1;
 
@@ -132,20 +130,20 @@ public class GameManager : MonoBehaviour
         //core collider will cause win/fail detect
         if (other.tag == "Player1")
         {
-            score[1] += 1;
+            PlayerPrefs.SetInt(SCORE_STR[1], PlayerPrefs.GetInt(SCORE_STR[1]) + 1);
             SceneManager.LoadScene("Main");
         }
         if (other.tag == "Player2")
         {
-            score[0] += 1;
+            PlayerPrefs.SetInt(SCORE_STR[0], PlayerPrefs.GetInt(SCORE_STR[0]) + 1);
             SceneManager.LoadScene("Main");
         }
-        if (score[0] >= WIN_SCORE)
+        if (PlayerPrefs.GetInt(SCORE_STR[0]) >= WIN_SCORE)
         {
             //red win
             SetCountToZero("Blue Win!");
         }
-        else if (score[1] >= WIN_SCORE)
+        else if (PlayerPrefs.GetInt(SCORE_STR[1]) >= WIN_SCORE)
         {
             //white win
             SetCountToZero("Red Win");
@@ -154,8 +152,9 @@ public class GameManager : MonoBehaviour
 
     void SetCountToZero(string winner)
     {
-        score = new int[] { 0, 0 };
-        WinMenuController.WinLose = winner;
+        PlayerPrefs.SetInt(SCORE_STR[0], 0);
+        PlayerPrefs.SetInt(SCORE_STR[1], 0);
+        PlayerPrefs.SetString("Winner", winner);
         SceneManager.LoadScene("Win");
     }
 
