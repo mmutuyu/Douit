@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -55,13 +54,19 @@ public class PlayerController : MonoBehaviour
     private bool isReversed;
     private bool isCharge = false;
 
+    //animation
+    Animator animator;
+
     void Start()
     {
+        //set basic component
         rb2d = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         MASS_ORIGINAL = rb2d.mass;
         ScaleOriginal = transform.localScale;
         ScaleEnlarged = ScaleOriginal + ENLARGE_SIZE;
 
+        //set movement
         friction = rb2d.drag;
         chargeTime = SpeedCharge * Time.fixedDeltaTime / friction / FrictionScale;
         angel = 180;
@@ -75,7 +80,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Time.timeScale == 0)
+        if (GameManager.IsPaused())
         {
             return;
         }
@@ -83,7 +88,6 @@ public class PlayerController : MonoBehaviour
         {
             powerCount = Math.Max(powerCount - Time.deltaTime * PowerBonusDecreasePerSecond, 0);
         }
-        setText();
 
         PlayerRotation();
 
@@ -246,14 +250,13 @@ public class PlayerController : MonoBehaviour
         return;
     }
 
-    private void setText()
-    {
-        //powerCountText.text = powerCount.ToString();
-    }
-
     public int getPowerCount()
     {
         return (int)Math.Ceiling(powerCount);
+    }
+
+    public void triggerPlayerFall() {
+        animator.SetTrigger("playerFall");
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using Random = UnityEngine.Random;
@@ -23,8 +24,9 @@ public class GameManager : MonoBehaviour
     }
 
     public GameObject[] players;
-    public static string[] SCORE_STR = { "Player1_Score", "Player2_Score"};
+    public static string[] SCORE_STR = { "Player1_Score", "Player2_Score" };
 
+    private static bool pause = false;
     public static int WIN_SCORE = 1;
 
     //basic set up
@@ -60,6 +62,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+
     // Use this for initialization
     void Start()
     {
@@ -67,7 +70,6 @@ public class GameManager : MonoBehaviour
         boardCenter = sr.bounds.center;
         boardSize = sr.bounds.size;
         radius = boardSize.x / 3;
-
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
@@ -87,6 +89,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.IsPaused())
+        {
+            return;
+        }
         //generate items if not reach maximum
         if (itemsOnBoard.Count < MaxItemsOnBoard)
         {
@@ -125,8 +131,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    IEnumerator OnTriggerExit2D(Collider2D other)
     {
+        PlayerController script = other.GetComponent<PlayerController>();
+        script.triggerPlayerFall();
+        yield return StartCoroutine(PauseGameForSeconds(1f));
+        //yield return PauseGameForSeconds(1f);
         //core collider will cause win/fail detect
         if (other.tag == "Player1")
         {
@@ -138,6 +148,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(SCORE_STR[0], PlayerPrefs.GetInt(SCORE_STR[0]) + 1);
             SceneManager.LoadScene("Main");
         }
+
         if (PlayerPrefs.GetInt(SCORE_STR[0]) >= WIN_SCORE)
         {
             //red win
@@ -148,7 +159,7 @@ public class GameManager : MonoBehaviour
             //white win
             SetCountToZero("Red Win");
         }
-    }
+    }    
 
     void SetCountToZero(string winner)
     {
@@ -161,5 +172,26 @@ public class GameManager : MonoBehaviour
     public void startNewGame()
     {
         SceneManager.LoadScene("Main");
+    }
+
+    public static void PauseGame()
+    {
+        pause = true;
+    }
+
+    public static void ResumeGame()
+    {
+        pause = false;
+    }
+
+    public static IEnumerator PauseGameForSeconds(float pauseTime) {
+        PauseGame();
+        yield return new WaitForSeconds(pauseTime);
+        ResumeGame();
+    }
+
+    public static bool IsPaused()
+    {
+        return pause;
     }
 }
