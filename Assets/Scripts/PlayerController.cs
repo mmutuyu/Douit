@@ -143,6 +143,10 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.IsPaused())
+        {
+            return;
+        }
         PlayerMovement(curSpeed);
     }
 
@@ -255,8 +259,11 @@ public class PlayerController : MonoBehaviour
         return (int)Math.Ceiling(powerCount);
     }
 
-    public void triggerPlayerFall() {
+    public void triggerPlayerFall()
+    {
         animator.SetTrigger("playerFall");
     }
+
+    
 
 }

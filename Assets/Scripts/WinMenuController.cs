@@ -31,13 +31,13 @@ public class WinMenuController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        WinLoseText.text = PlayerPrefs.GetString("Winner")+" Wins";
     }
 
     // Update is called once per frame
     void Update()
     {
-        WinLoseText.text = PlayerPrefs.GetString("Winner");
+        
     }
 
     public void startNewGame()

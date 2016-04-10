@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     }
 
     public GameObject[] players;
-    public static string[] SCORE_STR = { "Player1_Score", "Player2_Score" };
+    public static string[] SCORE_STR = { "Blue", "Red" };
 
     private static bool pause = false;
     public static int WIN_SCORE = 1;
@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
     private float nextSpawnTime;
     private Vector3 boardCenter;
     private Vector3 boardSize;
+
+    private static GameObject fallingPlayer;
 
     void Awake()
     {
@@ -131,42 +133,43 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator OnTriggerExit2D(Collider2D other)
+    void OnTriggerExit2D(Collider2D other)
     {
-        PlayerController script = other.GetComponent<PlayerController>();
-        script.triggerPlayerFall();
-        yield return StartCoroutine(PauseGameForSeconds(1f));
-        //yield return PauseGameForSeconds(1f);
-        //core collider will cause win/fail detect
-        if (other.tag == "Player1")
+        //player off stage
+        if (!pause && (other.tag == "Blue" || other.tag == "Red"))
         {
-            PlayerPrefs.SetInt(SCORE_STR[1], PlayerPrefs.GetInt(SCORE_STR[1]) + 1);
-            SceneManager.LoadScene("Main");
+            Debug.Log("Judge");
+            fallingPlayer = other.gameObject;
+            //focusCamera(fallingPlayer);
+            PlayerController script = other.GetComponent<PlayerController>();
+            script.triggerPlayerFall();
+            //yield return StartCoroutine(PauseGameForSeconds(5f));
         }
-        if (other.tag == "Player2")
+    }
+
+    public void focusCamera(GameObject player)
+    {
+        Camera.main.transform.localPosition = player.transform.localPosition + new Vector3(0, 0, -100);
+        Camera.main.fieldOfView += 1000;
+    }
+
+    public static void JudgeGame()
+    {
+        fallingPlayer.SetActive(false);
+        String winner = fallingPlayer.tag == "Blue" ? "Red" : "Blue";
+        int score = PlayerPrefs.GetInt(winner) + 1;
+        if (score >= WIN_SCORE)
         {
-            PlayerPrefs.SetInt(SCORE_STR[0], PlayerPrefs.GetInt(SCORE_STR[0]) + 1);
+            PlayerPrefs.SetInt("Blue", 0);
+            PlayerPrefs.SetInt("Red", 0);
+            PlayerPrefs.SetString("Winner", winner);
+            SceneManager.LoadScene("Win");
+        }
+        else {
+            PlayerPrefs.SetInt(winner, score);
             SceneManager.LoadScene("Main");
         }
 
-        if (PlayerPrefs.GetInt(SCORE_STR[0]) >= WIN_SCORE)
-        {
-            //red win
-            SetCountToZero("Blue Win!");
-        }
-        else if (PlayerPrefs.GetInt(SCORE_STR[1]) >= WIN_SCORE)
-        {
-            //white win
-            SetCountToZero("Red Win");
-        }
-    }    
-
-    void SetCountToZero(string winner)
-    {
-        PlayerPrefs.SetInt(SCORE_STR[0], 0);
-        PlayerPrefs.SetInt(SCORE_STR[1], 0);
-        PlayerPrefs.SetString("Winner", winner);
-        SceneManager.LoadScene("Win");
     }
 
     public void startNewGame()
@@ -184,7 +187,8 @@ public class GameManager : MonoBehaviour
         pause = false;
     }
 
-    public static IEnumerator PauseGameForSeconds(float pauseTime) {
+    public static IEnumerator PauseGameForSeconds(float pauseTime)
+    {
         PauseGame();
         yield return new WaitForSeconds(pauseTime);
         ResumeGame();
