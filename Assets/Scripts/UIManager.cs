@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
@@ -9,11 +10,14 @@ public class UIManager : MonoBehaviour
     public GameObject[] EnergyBar;
     public GameObject[] StarBar;
     public Text[] AttackButtonText;
+    public GameObject ReadyBar;
+
+    private static float FREEZE_TIME = 2f;
 
     private static String[] AttackButtonTextList = { "None", "GiantGrowth", "Charge", "Confuse" };
 
     // Use this for initialization
-    void Start()
+    IEnumerator Start()
     {
         for (int i = 0; i < GameManager.instance.players.Length; i++)
         {
@@ -25,11 +29,19 @@ public class UIManager : MonoBehaviour
 
             setAttackButtonText(AttackButtonText[i], script.getSkillLevel());
         }
-    }
+
+        yield return StartCoroutine(GameManager.PauseGameForSeconds(FREEZE_TIME));
+        ReadyBar.SetActive(false);
+
+    }    
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.IsPaused())
+        {
+            return;
+        }
         for (int i = 0; i < GameManager.instance.players.Length; i++)
         {
             PlayerController script = GameManager.instance.players[i].GetComponent<PlayerController>();

@@ -13,23 +13,11 @@ public class Ready : MonoBehaviour {
 
 	void Awake()
 	{
-		Pause ();
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if (Time.realtimeSinceStartup - stoptime >= FREEZE_TIME) 
-		{
-			Time.timeScale = 1;
-			gameObject.SetActive (false);
-		}
 	}
-
-
-	void Pause()
-	{
-		Time.timeScale = 0;
-		stoptime = Time.realtimeSinceStartup;
-	}
+    
 }
 	

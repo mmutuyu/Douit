@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using Random = UnityEngine.Random;
@@ -23,8 +24,9 @@ public class GameManager : MonoBehaviour
     }
 
     public GameObject[] players;
-    public static string[] SCORE_STR = { "Player1_Score", "Player2_Score"};
+    public static string[] SCORE_STR = { "Blue", "Red" };
 
+    private static bool pause = false;
     public static int WIN_SCORE = 1;
 
     //basic set up
@@ -43,6 +45,8 @@ public class GameManager : MonoBehaviour
     private Vector3 boardCenter;
     private Vector3 boardSize;
 
+    private static GameObject fallingPlayer;
+
     void Awake()
     {
         //Check if instance already exists
@@ -60,6 +64,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+
     // Use this for initialization
     void Start()
     {
@@ -67,7 +72,6 @@ public class GameManager : MonoBehaviour
         boardCenter = sr.bounds.center;
         boardSize = sr.bounds.size;
         radius = boardSize.x / 3;
-
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
@@ -87,6 +91,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.IsPaused())
+        {
+            return;
+        }
         //generate items if not reach maximum
         if (itemsOnBoard.Count < MaxItemsOnBoard)
         {
@@ -127,39 +135,67 @@ public class GameManager : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other)
     {
-        //core collider will cause win/fail detect
-        if (other.tag == "Player1")
+        //player off stage
+        if (!pause && (other.tag == "Blue" || other.tag == "Red"))
         {
-            PlayerPrefs.SetInt(SCORE_STR[1], PlayerPrefs.GetInt(SCORE_STR[1]) + 1);
-            SceneManager.LoadScene("Main");
-        }
-        if (other.tag == "Player2")
-        {
-            PlayerPrefs.SetInt(SCORE_STR[0], PlayerPrefs.GetInt(SCORE_STR[0]) + 1);
-            SceneManager.LoadScene("Main");
-        }
-        if (PlayerPrefs.GetInt(SCORE_STR[0]) >= WIN_SCORE)
-        {
-            //red win
-            SetCountToZero("Blue Win!");
-        }
-        else if (PlayerPrefs.GetInt(SCORE_STR[1]) >= WIN_SCORE)
-        {
-            //white win
-            SetCountToZero("Red Win");
+            Debug.Log("Judge");
+            fallingPlayer = other.gameObject;
+            //focusCamera(fallingPlayer);
+            PlayerController script = other.GetComponent<PlayerController>();
+            script.triggerPlayerFall();
+            //yield return StartCoroutine(PauseGameForSeconds(5f));
         }
     }
 
-    void SetCountToZero(string winner)
+    public void focusCamera(GameObject player)
     {
-        PlayerPrefs.SetInt(SCORE_STR[0], 0);
-        PlayerPrefs.SetInt(SCORE_STR[1], 0);
-        PlayerPrefs.SetString("Winner", winner);
-        SceneManager.LoadScene("Win");
+        Camera.main.transform.localPosition = player.transform.localPosition + new Vector3(0, 0, -100);
+        Camera.main.fieldOfView += 1000;
+    }
+
+    public static void JudgeGame()
+    {
+        fallingPlayer.SetActive(false);
+        String winner = fallingPlayer.tag == "Blue" ? "Red" : "Blue";
+        int score = PlayerPrefs.GetInt(winner) + 1;
+        if (score >= WIN_SCORE)
+        {
+            PlayerPrefs.SetInt("Blue", 0);
+            PlayerPrefs.SetInt("Red", 0);
+            PlayerPrefs.SetString("Winner", winner);
+            SceneManager.LoadScene("Win");
+        }
+        else {
+            PlayerPrefs.SetInt(winner, score);
+            SceneManager.LoadScene("Main");
+        }
+
     }
 
     public void startNewGame()
     {
         SceneManager.LoadScene("Main");
+    }
+
+    public static void PauseGame()
+    {
+        pause = true;
+    }
+
+    public static void ResumeGame()
+    {
+        pause = false;
+    }
+
+    public static IEnumerator PauseGameForSeconds(float pauseTime)
+    {
+        PauseGame();
+        yield return new WaitForSeconds(pauseTime);
+        ResumeGame();
+    }
+
+    public static bool IsPaused()
+    {
+        return pause;
     }
 }
