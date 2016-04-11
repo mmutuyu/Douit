@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     //basic set up
     public static GameManager instance = null;
     public GameObject[] PickUps;
+    public GameObject OutterShockWave;
+    public GameObject InnerShockWave;
 
     private static float pi = (float)Math.PI;
 
@@ -71,7 +73,7 @@ public class GameManager : MonoBehaviour
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         boardCenter = sr.bounds.center;
         boardSize = sr.bounds.size;
-        radius = boardSize.x / 3;
+        radius = boardSize.x / 3;        
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
@@ -91,7 +93,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.IsPaused())
+        if (GameManager.instance.IsPaused())
         {
             return;
         }
@@ -153,7 +155,7 @@ public class GameManager : MonoBehaviour
         Camera.main.fieldOfView += 1000;
     }
 
-    public static void JudgeGame()
+    public void JudgeGame()
     {
         fallingPlayer.SetActive(false);
         String winner = fallingPlayer.tag == "Blue" ? "Red" : "Blue";
@@ -169,7 +171,6 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(winner, score);
             SceneManager.LoadScene("Main");
         }
-
     }
 
     public void startNewGame()
@@ -177,25 +178,26 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Main");
     }
 
-    public static void PauseGame()
+    public void PauseGame()
     {
         pause = true;
     }
 
-    public static void ResumeGame()
+    public void ResumeGame()
     {
         pause = false;
     }
 
-    public static IEnumerator PauseGameForSeconds(float pauseTime)
+    public IEnumerator PauseGameForSeconds(float pauseTime)
     {
         PauseGame();
         yield return new WaitForSeconds(pauseTime);
         ResumeGame();
     }
 
-    public static bool IsPaused()
+    public bool IsPaused()
     {
         return pause;
     }
+    
 }

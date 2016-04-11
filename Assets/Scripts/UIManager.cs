@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
 
     private static float FREEZE_TIME = 2f;
 
-    private static String[] AttackButtonTextList = { "None", "GiantGrowth", "Charge", "Confuse" };
+    private static String[] AttackButtonTextList = { "None", "GiantGrowth", "Charge", "ShockWave" };
 
     // Use this for initialization
     IEnumerator Start()
@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour
             setAttackButtonText(AttackButtonText[i], script.getSkillLevel());
         }
 
-        yield return StartCoroutine(GameManager.PauseGameForSeconds(FREEZE_TIME));
+        yield return StartCoroutine(GameManager.instance.PauseGameForSeconds(FREEZE_TIME));
         ReadyBar.SetActive(false);
 
     }    
@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.IsPaused())
+        if (GameManager.instance.IsPaused())
         {
             return;
         }
