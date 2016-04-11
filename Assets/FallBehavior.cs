@@ -8,7 +8,7 @@ public class FallBehavior : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Debug.Log("Animation Start");
-        GameManager.PauseGame();
+        GameManager.instance.PauseGame();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -19,8 +19,8 @@ public class FallBehavior : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        GameManager.ResumeGame();
-        GameManager.JudgeGame();
+        GameManager.instance.ResumeGame();
+        GameManager.instance.JudgeGame();
         Debug.Log("Animation End");
     }
 

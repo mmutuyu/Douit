@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour
     private static float SpeedCharge = SpeedOriginal * 70;
 
     public GameObject Opponent;
-
+    public GameObject OutterShockWave;
+    public GameObject InnerShockWave;
 
     /// <summary>
     /// non-static parameters
@@ -42,7 +43,7 @@ public class PlayerController : MonoBehaviour
     //status
     //0:enlarge, 1:speedup, 2:reverse controller， 3:not rotation time
     private float[] statusTimeLeft = { 0, 0, 0, 0 };
-    private float powerCount = 0f;
+    private float powerCount = 5f;
     private int[] PowerLevels = { 0, 2, 4 };
 
     //movement
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.IsPaused())
+        if (GameManager.instance.IsPaused())
         {
             return;
         }
@@ -131,9 +132,7 @@ public class PlayerController : MonoBehaviour
                         //PlayerSpeedUp(false);
                         break;
                     case 2:
-                        PlayerControllerReverse(false);
-                        break;
-                    case 3:
+                        //PlayerControllerReverse(false);
                         break;
                 }
             }
@@ -143,13 +142,19 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.IsPaused())
+        if (GameManager.instance.IsPaused())
         {
             return;
         }
         PlayerMovement(curSpeed);
     }
 
+
+
+
+    /// <summary>
+    /// Movement Code
+    /// </summary>
     //control player rotation
     private void PlayerRotation()
     {
@@ -168,6 +173,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void ChangeRotationStatus()
+    {
+        isRotate = !isRotate;
+    }
+
+    public void ChangeRotationDirection()
+    {
+        angel = -angel;
+    }
+
+
+
+
+    /// <summary>
+    /// Pick Item Code
+    /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
 
@@ -190,16 +211,12 @@ public class PlayerController : MonoBehaviour
         other.gameObject.SetActive(false);
     }
 
-    public void ChangeRotationStatus()
-    {
-        isRotate = !isRotate;
-    }
 
-    public void ChangeRotationDirection()
-    {
-        angel = -angel;
-    }
 
+
+    /// <summary>
+    /// Skill Code
+    /// </summary>
     private void PlayerEnlarge(bool isEnlarged)
     {
         if (isEnlarged)
@@ -222,6 +239,14 @@ public class PlayerController : MonoBehaviour
     {
         isCharge = true;
         PlayerMovement(SpeedCharge);
+    }
+
+    private void CreateShockWave()
+    {        
+        GameObject outterWave=Instantiate(OutterShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
+        outterWave.GetComponent<OutterShockWaveController>().setUser(gameObject);
+        gameObject.SetActive(false);
+        outterWave.SetActive(true);
     }
 
     private void PlayerControllerReverse(bool isReversed)
@@ -247,13 +272,21 @@ public class PlayerController : MonoBehaviour
                 isCharge = false;
                 break;
             case 2:
-                Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
+                //Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
+                CreateShockWave();
                 break;
         }
         powerCount = 0;
         return;
     }
 
+
+
+
+    /// <summary>
+    /// Other Code
+    /// </summary>
+    /// <returns></returns>
     public int getPowerCount()
     {
         return (int)Math.Ceiling(powerCount);
@@ -263,7 +296,4 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetTrigger("playerFall");
     }
-
-    
-
 }
