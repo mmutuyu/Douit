@@ -1,13 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-
-    public Text powerCountText;
-
     /// <summary>
     /// static parameters
     /// </summary>
@@ -18,13 +14,13 @@ public class PlayerController : MonoBehaviour
 
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
-    private static float PowerBonusDecreaseCoolDown = 5f;       //bonus start to decrease after how long the player pick up last item
-    private static float PowerBonusMaxRange = 10f;
+    public static int POWER_MIN_RANGE = 0;
+    public static int POWER_MAX_RANGE = 5;
 
     //enlarge
-    private static Vector3 EnlargeSize = new Vector3(5, 5, 0);
-    private static float MassOriginal;
-    private static float MassChange = 3f;
+    private static Vector3 ENLARGE_SIZE = new Vector3(5, 5, 0);
+    private static float MASS_ORIGINAL;
+    private static float MASS_ENLARGE = 3f;
 
     //speed
     private static float SpeedOriginal = 18000f;
@@ -46,9 +42,8 @@ public class PlayerController : MonoBehaviour
     //status
     //0:enlarge, 1:speedup, 2:reverse controller， 3:not rotation time
     private float[] statusTimeLeft = { 0, 0, 0, 0 };
-    private float powerCount = 4f;
-    private float decreaseCoolDown = 0f;
-    private int[] PowerLevels = { 1, 3, 5 };
+    private float powerCount = 0f;
+    private int[] PowerLevels = { 0, 2, 4 };
 
     //movement
     private float friction;
@@ -59,13 +54,19 @@ public class PlayerController : MonoBehaviour
     private bool isReversed;
     private bool isCharge = false;
 
+    //animation
+    Animator animator;
+
     void Start()
     {
+        //set basic component
         rb2d = GetComponent<Rigidbody2D>();
-        MassOriginal = rb2d.mass;
+        animator = GetComponent<Animator>();
+        MASS_ORIGINAL = rb2d.mass;
         ScaleOriginal = transform.localScale;
-        ScaleEnlarged = ScaleOriginal + EnlargeSize;
+        ScaleEnlarged = ScaleOriginal + ENLARGE_SIZE;
 
+        //set movement
         friction = rb2d.drag;
         chargeTime = SpeedCharge * Time.fixedDeltaTime / friction / FrictionScale;
         angel = 180;
@@ -73,27 +74,45 @@ public class PlayerController : MonoBehaviour
         isRotate = true;
         isReversed = false;
 
-        powerCountText.text = powerCount.ToString();
+        //powerCountText.text = powerCount.ToString();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (powerCount > 0)
-        {            
-            decreaseCoolDown = Math.Max(decreaseCoolDown - Time.deltaTime, 0);
-            if (decreaseCoolDown == 0)
-            {
-                powerCount -= Time.deltaTime * PowerBonusDecreasePerSecond;
-                powerCount = Math.Max(powerCount, 0);
-            }
+        if (GameManager.IsPaused())
+        {
+            return;
         }
-        setText();
+        if (powerCount > 0)
+        {
+            powerCount = Math.Max(powerCount - Time.deltaTime * PowerBonusDecreasePerSecond, 0);
+        }
 
         PlayerRotation();
 
         CheckStatusTime();
 
+        SetAttackButtonText();
+    }
+
+    public int getSkillLevel()
+    {
+        for (int i = PowerLevels.Length - 1; i >= 0; i--)
+        {
+            int thisLevel = PowerLevels[i];
+            if (powerCount > thisLevel)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void SetAttackButtonText()
+    {
+
+        //attackButtonText.text = AttackButtonTextList[SkillLevel() + 1];
     }
 
     //check each status' left time
@@ -124,6 +143,10 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.IsPaused())
+        {
+            return;
+        }
         PlayerMovement(curSpeed);
     }
 
@@ -161,8 +184,9 @@ public class PlayerController : MonoBehaviour
 
     private void PickUpItem(Collider2D other)
     {
-        powerCount = Math.Min(powerCount + other.GetComponent<ItemController>().bonus, PowerBonusMaxRange);
-        decreaseCoolDown = PowerBonusDecreaseCoolDown;
+        powerCount += other.GetComponent<ItemController>().getBonus();
+        powerCount = Math.Max(powerCount, POWER_MIN_RANGE);
+        powerCount = Math.Min(powerCount, POWER_MAX_RANGE);
         other.gameObject.SetActive(false);
     }
 
@@ -182,17 +206,17 @@ public class PlayerController : MonoBehaviour
         {
             statusTimeLeft[0] = StatusDurationTime;
             transform.localScale = ScaleEnlarged;
-            rb2d.mass = MassOriginal * MassChange;
+            rb2d.mass = MASS_ORIGINAL * MASS_ENLARGE;
             curSpeed = SpeedOriginal * SpeedChange;
         }
         else
         {
             transform.localScale = ScaleOriginal;
-            rb2d.mass = MassOriginal;
+            rb2d.mass = MASS_ORIGINAL;
             curSpeed = SpeedOriginal;
         }
     }
-    
+
 
     private void PlayerCharge()
     {
@@ -209,37 +233,37 @@ public class PlayerController : MonoBehaviour
         this.isReversed = isReversed;
     }
 
-    public void skillHandler()
+    public void SkillHandler()
     {
-        for (int i = PowerLevels.Length - 1; i >= 0; i--)
+        switch (getSkillLevel())
         {
-            int thisLevel = PowerLevels[i];
-            if (powerCount >= thisLevel)
-            {
-                switch (i)
-                {
-                    case 0:
-                        PlayerEnlarge(true);
-                        break;
-                    case 1:
-                        isCharge = true;
-                        statusTimeLeft[3] = chargeTime;
-                        PlayerCharge();
-                        isCharge = false;
-                        break;
-                    case 2:
-                        Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
-                        break;
-                }
-                powerCount = 0;
-                return;
-            }
+            case 0:
+                PlayerEnlarge(true);
+                break;
+            case 1:
+                isCharge = true;
+                statusTimeLeft[3] = chargeTime;
+                PlayerCharge();
+                isCharge = false;
+                break;
+            case 2:
+                Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
+                break;
         }
+        powerCount = 0;
+        return;
     }
 
-    private void setText()
+    public int getPowerCount()
     {
-        powerCountText.text = powerCount.ToString();
+        return (int)Math.Ceiling(powerCount);
     }
+
+    public void triggerPlayerFall()
+    {
+        animator.SetTrigger("playerFall");
+    }
+
+    
 
 }

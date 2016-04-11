@@ -4,11 +4,14 @@ public class ItemController : MonoBehaviour
 {
 
     public float bonus;
+    public float punish;
+    public Sprite rotSprite;
 
-    private static float ItemDisappearTime = 10f;
+    public float ItemDisappearTime;
+    public float ItemRotTime;
 
     private float timeLeft;
-    
+
     void Start()
     {
         GameManager.instance.addItemToList(this);
@@ -18,16 +21,31 @@ public class ItemController : MonoBehaviour
     //Update is called every frame
     void Update()
     {
+        if (GameManager.IsPaused())
+        {
+            return;
+        }
         timeLeft -= Time.deltaTime;
         if (timeLeft <= 0)
         {
             gameObject.SetActive(false);
         }
+        else if (timeLeft <= ItemRotTime)
+        {
+            GetComponent<SpriteRenderer>().sprite = rotSprite;
+        }
     }
+
+    public float getBonus()
+    {
+        return timeLeft <= ItemRotTime ? punish : bonus;
+    }
+
+
 
     void OnDisable()
     {
         GameManager.instance.removeItemFromList(this);
     }
-    
+
 }
