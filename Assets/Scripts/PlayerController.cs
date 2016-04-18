@@ -23,10 +23,10 @@ public class PlayerController : MonoBehaviour
     private static float MASS_ENLARGE = 3f;
 
     //speed
-    private static float SpeedOriginal = 18000f;
+    private static float SpeedOriginal = 32000f;
     private static float FrictionScale = 16800f;
     private static float SpeedChange = 2f;
-    private static float SpeedCharge = SpeedOriginal * 70;
+    private static float SpeedCharge = SpeedOriginal * 40;
 
     public GameObject Opponent;
     public GameObject OutterShockWave;
@@ -44,9 +44,9 @@ public class PlayerController : MonoBehaviour
 
     //status
     //0:enlarge, 1:speedup, 2:reverse controller， 3:not rotation time
-    private float[] statusTimeLeft = { 0, 0, 0, 0 };
-    private float powerCount = 5f;
-    private int[] PowerLevels = { 0, 2, 4 };
+    private float[] statusTimeLeft = { 0, 0, 0, 0,0 };
+    private float powerCount = 3f;
+    private int[] PowerLevels = { 1, 2, 4 };
 
     //movement
     private float friction;
@@ -133,7 +133,8 @@ public class PlayerController : MonoBehaviour
                     case 1:
                         //PlayerSpeedUp(false);
                         break;
-                    case 2:
+				case 4:
+					CreateShockWave ();
                         //PlayerControllerReverse(false);
                         break;
                 }
@@ -270,18 +271,19 @@ public class PlayerController : MonoBehaviour
         switch (getSkillLevel())
         {
             case 0:
-                PlayerEnlarge(true);
+				isCharge = true;
+				statusTimeLeft[3] = chargeTime;
+				PlayerCharge();
+				isCharge = false;
                 break;
             case 1:
-                isCharge = true;
-                statusTimeLeft[3] = chargeTime;
-                PlayerCharge();
-                isCharge = false;
+				PlayerEnlarge(true);
                 break;
             case 2:
                 //Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
-                Opponent.GetComponent<PlayerController>().PlayerEnlarge(true);
-                CreateShockWave();
+                //Opponent.GetComponent<PlayerController>().PlayerEnlarge(true);
+                //CreateShockWave();
+			statusTimeLeft[4]=0.5f;
                 break;
         }
         powerCount = 0;
