@@ -7,7 +7,7 @@ public class OutterShockWaveController : MonoBehaviour
     protected GameObject user = null;
     
     protected static float RADIUS_ENLARGE_TIME = 1f;
-    protected static float RADIUS_ENLARGE_SPEED = 2f;
+    protected static float RADIUS_ENLARGE_SPEED_ORIGINAL = 2f;
     protected static Vector3 ORIGINAL_SCALE;
 
     protected float timeLeft;
@@ -19,7 +19,7 @@ public class OutterShockWaveController : MonoBehaviour
         {
             return;
         }
-        gameObject.transform.localScale += ORIGINAL_SCALE * RADIUS_ENLARGE_SPEED;
+        gameObject.transform.localScale += ORIGINAL_SCALE * RADIUS_ENLARGE_SPEED_ORIGINAL;
         if (timeLeft > 0 && timeLeft - Time.deltaTime < 0)
         {
             user.SetActive(true);
@@ -36,7 +36,6 @@ public class OutterShockWaveController : MonoBehaviour
 
     public void setUser(GameObject player)
     {
-        Debug.Log("User: " + player.tag);
         user = player;
     }
 
@@ -50,4 +49,5 @@ public class OutterShockWaveController : MonoBehaviour
         gameObject.transform.localScale = ORIGINAL_SCALE;
         user = null;
     }
+
 }

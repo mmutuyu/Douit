@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         //player off stage
-        if (!pause && (other.tag == "Blue" || other.tag == "Red"))
+        if (!pause && (other.tag == "Player"))
         {
             Debug.Log("Judge");
             fallingPlayer = other.gameObject;
@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour
     public void JudgeGame()
     {
         fallingPlayer.SetActive(false);
-        String winner = fallingPlayer.tag == "Blue" ? "Red" : "Blue";
+        String winner = fallingPlayer.name == "Blue" ? "Red" : "Blue";
         int score = PlayerPrefs.GetInt(winner) + 1;
         if (score >= WIN_SCORE)
         {
