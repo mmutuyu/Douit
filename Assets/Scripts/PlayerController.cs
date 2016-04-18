@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     public GameObject OutterShockWave;
     public GameObject InnerShockWave;
 
+    public bool isEnlarged;
+
     /// <summary>
     /// non-static parameters
     /// </summary>
@@ -217,8 +219,9 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// Skill Code
     /// </summary>
-    private void PlayerEnlarge(bool isEnlarged)
+    public void PlayerEnlarge(bool isEnlarged)
     {
+        this.isEnlarged = isEnlarged;
         if (isEnlarged)
         {
             statusTimeLeft[0] = StatusDurationTime;
@@ -245,8 +248,12 @@ public class PlayerController : MonoBehaviour
     {        
         GameObject outterWave=Instantiate(OutterShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
         outterWave.GetComponent<OutterShockWaveController>().setUser(gameObject);
+        GameObject innerWave = Instantiate(InnerShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
+        innerWave.GetComponent<InnerShockWaveController>().setUser(gameObject);
+
         gameObject.SetActive(false);
         outterWave.SetActive(true);
+        innerWave.SetActive(true);
     }
 
     private void PlayerControllerReverse(bool isReversed)
@@ -273,6 +280,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case 2:
                 //Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
+                Opponent.GetComponent<PlayerController>().PlayerEnlarge(true);
                 CreateShockWave();
                 break;
         }
@@ -296,4 +304,5 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetTrigger("playerFall");
     }
+    
 }

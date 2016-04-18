@@ -1,15 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class InnerShockWaveController : OutterShockWaveController {
-    
-	// Update is called once per frame
-	void Update () {
+public class InnerShockWaveController : OutterShockWaveController
+{
+    //protected static float RADIUS_ENLARGE_SPEED_ORIGINAL = 2f;
+    protected static float RADIUS_ENLARGE_SPEED_LOW = 1.5f;
+    bool counter = false;
 
-        if (GameManager.instance.IsPaused() || !isActiveAndEnabled || timeLeft < 0)
+    // Update is called once per frame
+    void Update()
+    {
+        if (GameManager.instance.IsPaused() || !isActiveAndEnabled || timeLeft <= 0)
         {
             return;
         }
+        Debug.Log("Update counter:" + counter);
+        gameObject.transform.localScale += ORIGINAL_SCALE * (counter ? RADIUS_ENLARGE_SPEED_LOW : RADIUS_ENLARGE_SPEED_ORIGINAL);
+        if (timeLeft > 0 && timeLeft - Time.deltaTime < 0)
+        {
+            user.SetActive(true);
+            gameObject.SetActive(false);
+        }
         timeLeft -= Time.deltaTime;
+    }
+
+    void OnCollisionStay2D(Collision2D coll)
+    {
+        if (coll.gameObject.tag == "Player")
+        {
+
+            PlayerController script = coll.gameObject.GetComponent<PlayerController>();
+            counter = script.isEnlarged;
+            Debug.Log("Collision counter:" + counter);
+        }
+        else if (coll.gameObject.tag == "PickUp") {
+
+        }
     }
 }
