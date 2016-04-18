@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     public static string[] SCORE_STR = { "Blue", "Red" };
 
     private static bool pause = false;
-    public static int WIN_SCORE = 1;
+    public static int WIN_SCORE = 5;
 
     //basic set up
     public static GameManager instance = null;

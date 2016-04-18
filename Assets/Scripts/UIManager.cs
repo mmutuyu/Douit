@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
 
     private static float FREEZE_TIME = 2f;
 
-    private static String[] AttackButtonTextList = { "None", "GiantGrowth", "Charge", "ShockWave" };
+	private static String[] AttackButtonTextList = { "None", "Charge", "GiantGrowth", "ShockWave" };
 
     // Use this for initialization
     IEnumerator Start()
