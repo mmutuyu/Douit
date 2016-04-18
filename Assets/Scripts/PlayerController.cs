@@ -23,10 +23,10 @@ public class PlayerController : MonoBehaviour
     private static float MASS_ENLARGE = 3f;
 
     //speed
-    private static float SpeedOriginal = 18000f;
+    private static float SpeedOriginal = 40000f;
     private static float FrictionScale = 16800f;
     private static float SpeedChange = 2f;
-    private static float SpeedCharge = SpeedOriginal * 70;
+    private static float SpeedCharge = SpeedOriginal * 40;
 
     public GameObject Opponent;
     public GameObject OutterShockWave;
@@ -280,7 +280,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case 2:
                 //Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
-                Opponent.GetComponent<PlayerController>().PlayerEnlarge(true);
+                //Opponent.GetComponent<PlayerController>().PlayerEnlarge(true);
                 CreateShockWave();
                 break;
         }
