@@ -30,15 +30,15 @@ public class UIManager : MonoBehaviour
             setAttackButtonText(AttackButtonText[i], script.getSkillLevel());
         }
 
-        yield return StartCoroutine(GameManager.instance.PauseGameForSeconds(FREEZE_TIME));
+        Debug.Log("start pause:"+Time.realtimeSinceStartup);
+        yield return GameManager.instance.PauseGameForSeconds(FREEZE_TIME);
         ReadyBar.SetActive(false);
-
     }    
 
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.IsPaused())
+        if (GameManager.instance.isPaused || GameManager.instance.isGameOver)
         {
             return;
         }

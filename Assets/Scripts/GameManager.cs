@@ -26,7 +26,6 @@ public class GameManager : MonoBehaviour
     public GameObject[] players;
     public static string[] SCORE_STR = { "Blue", "Red" };
 
-    private static bool pause = false;
     public static int WIN_SCORE = 5;
 
     //basic set up
@@ -48,6 +47,10 @@ public class GameManager : MonoBehaviour
     private Vector3 boardSize;
 
     private static GameObject fallingPlayer;
+    //private float EndPauseTime=0;
+
+    public bool isPaused = false;
+    public bool isGameOver = false;
 
     void Awake()
     {
@@ -56,14 +59,14 @@ public class GameManager : MonoBehaviour
         {
             //if not, set instance to this
             instance = this;
+
         }
         //If instance already exists and it's not this:
         else if (instance != this)
         {
-            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager. 
             Destroy(gameObject);
         }
-
     }
 
 
@@ -73,7 +76,7 @@ public class GameManager : MonoBehaviour
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         boardCenter = sr.bounds.center;
         boardSize = sr.bounds.size;
-        radius = boardSize.x / 3;        
+        radius = boardSize.x / 3;
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
@@ -93,7 +96,13 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.IsPaused())
+        /*
+        if (isPaused && EndPauseTime<Time.realtimeSinceStartup) {
+            Debug.Log("Resume");
+            ResumeGame();
+        }
+        */
+        if (isPaused || isGameOver)
         {
             return;
         }
@@ -138,22 +147,24 @@ public class GameManager : MonoBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         //player off stage
-        if (!pause && (other.tag == "Player"))
+        if (!isPaused && (other.tag == "Player"))
         {
-            Debug.Log("Judge");
+            isGameOver = true;
             fallingPlayer = other.gameObject;
             //focusCamera(fallingPlayer);
             PlayerController script = other.GetComponent<PlayerController>();
+
             script.triggerPlayerFall();
-            //yield return StartCoroutine(PauseGameForSeconds(5f));
         }
     }
 
+    /*
     public void focusCamera(GameObject player)
     {
         Camera.main.transform.localPosition = player.transform.localPosition + new Vector3(0, 0, -100);
         Camera.main.fieldOfView += 1000;
     }
+    */
 
     public void JudgeGame()
     {
@@ -180,24 +191,31 @@ public class GameManager : MonoBehaviour
 
     public void PauseGame()
     {
-        pause = true;
+        isPaused = true;
+        Time.timeScale = 0;
     }
 
     public void ResumeGame()
     {
-        pause = false;
+        isPaused = false;
+        Time.timeScale = 1;
     }
+
 
     public IEnumerator PauseGameForSeconds(float pauseTime)
     {
         PauseGame();
-        yield return new WaitForSeconds(pauseTime);
+        float start = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup < start + pauseTime)
+        {
+            yield return null;
+        }
         ResumeGame();
     }
 
-    public bool IsPaused()
+
+    public void OnApplicationQuit()
     {
-        return pause;
+        PlayerPrefs.DeleteAll();
     }
-    
 }

@@ -21,7 +21,7 @@ public class ItemController : MonoBehaviour
     //Update is called every frame
     void Update()
     {
-        if (GameManager.instance.IsPaused())
+        if (GameManager.instance.isPaused)
         {
             return;
         }

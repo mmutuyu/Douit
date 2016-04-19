@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     //private static float degree = (float)Math.PI / 360;
 
     //skill
-    private static float StatusDurationTime = 5;
+    private static float ENLARGE_TIME = 5;
 
     //bonus
     private static float PowerBonusDecreasePerSecond = 0.05f;   //how much decrease per second
@@ -43,9 +43,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 ScaleEnlarged;
 
     //status
-    //0:enlarge, 1:speedup, 2:reverse controller， 3:not rotation time
-    private float[] statusTimeLeft = { 0, 0, 0, 0,0 };
-    private float powerCount = 3f;
+    //0:Charge, 1:Enlarge, 2:ShockWave, 3:controller reverse
+    private float[] statusTimeLeft = { 0, 0, 0 };
+    private float powerCount = 5f;
     private int[] PowerLevels = { 1, 2, 4 };
 
     //movement
@@ -56,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private bool isRotate;
     private bool isReversed;
     private bool isCharge = false;
+
 
     //animation
     Animator animator;
@@ -71,6 +72,7 @@ public class PlayerController : MonoBehaviour
 
         //set movement
         friction = rb2d.drag;
+        //F*t=
         chargeTime = SpeedCharge * Time.fixedDeltaTime / friction / FrictionScale;
         angel = 180;
         curSpeed = SpeedOriginal;
@@ -83,7 +85,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.IsPaused())
+        if (GameManager.instance.isPaused || GameManager.instance.isGameOver)
         {
             return;
         }
@@ -95,8 +97,6 @@ public class PlayerController : MonoBehaviour
         PlayerRotation();
 
         CheckStatusTime();
-
-        SetAttackButtonText();
     }
 
     public int getSkillLevel()
@@ -112,12 +112,6 @@ public class PlayerController : MonoBehaviour
         return -1;
     }
 
-    private void SetAttackButtonText()
-    {
-
-        //attackButtonText.text = AttackButtonTextList[SkillLevel() + 1];
-    }
-
     //check each status' left time
     private void CheckStatusTime()
     {
@@ -128,14 +122,13 @@ public class PlayerController : MonoBehaviour
                 switch (i)
                 {
                     case 0:
-                        PlayerEnlarge(false);
+                        PlayerCharge(false);
                         break;
                     case 1:
-                        //PlayerSpeedUp(false);
+                        PlayerEnlarge(false);
                         break;
-				case 4:
-					CreateShockWave ();
-                        //PlayerControllerReverse(false);
+                    case 2:
+                        CreateShockWave();
                         break;
                 }
             }
@@ -145,10 +138,6 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.instance.IsPaused())
-        {
-            return;
-        }
         PlayerMovement(curSpeed);
     }
 
@@ -161,7 +150,7 @@ public class PlayerController : MonoBehaviour
     //control player rotation
     private void PlayerRotation()
     {
-        if (!isCharge && (isRotate != isReversed) && statusTimeLeft[3] <= 0)
+        if (!isCharge && (isRotate != isReversed))
         {
             transform.Rotate(0, 0, angel * Time.deltaTime);
         }
@@ -176,10 +165,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    
     public void ChangeRotationStatus()
     {
         isRotate = !isRotate;
     }
+    
 
     public void ChangeRotationDirection()
     {
@@ -225,13 +216,14 @@ public class PlayerController : MonoBehaviour
         this.isEnlarged = isEnlarged;
         if (isEnlarged)
         {
-            statusTimeLeft[0] = StatusDurationTime;
+            statusTimeLeft[1] = ENLARGE_TIME;
             transform.localScale = ScaleEnlarged;
             rb2d.mass = MASS_ORIGINAL * MASS_ENLARGE;
             curSpeed = SpeedOriginal * SpeedChange;
         }
         else
         {
+            statusTimeLeft[1] = 0;
             transform.localScale = ScaleOriginal;
             rb2d.mass = MASS_ORIGINAL;
             curSpeed = SpeedOriginal;
@@ -239,15 +231,22 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void PlayerCharge()
+    private void PlayerCharge(bool isCharge)
     {
-        isCharge = true;
-        PlayerMovement(SpeedCharge);
+        this.isCharge = isCharge;
+        if (isCharge)
+        {
+            statusTimeLeft[0] = chargeTime;
+            PlayerMovement(SpeedCharge);
+        }
+        else {
+            statusTimeLeft[0] = 0;
+        }
     }
 
     private void CreateShockWave()
-    {        
-        GameObject outterWave=Instantiate(OutterShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
+    {
+        GameObject outterWave = Instantiate(OutterShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
         outterWave.GetComponent<OutterShockWaveController>().setUser(gameObject);
         GameObject innerWave = Instantiate(InnerShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
         innerWave.GetComponent<InnerShockWaveController>().setUser(gameObject);
@@ -257,6 +256,7 @@ public class PlayerController : MonoBehaviour
         innerWave.SetActive(true);
     }
 
+    /*
     private void PlayerControllerReverse(bool isReversed)
     {
         if (isReversed)
@@ -265,25 +265,20 @@ public class PlayerController : MonoBehaviour
         }
         this.isReversed = isReversed;
     }
+    */
 
     public void SkillHandler()
     {
         switch (getSkillLevel())
         {
             case 0:
-				isCharge = true;
-				statusTimeLeft[3] = chargeTime;
-				PlayerCharge();
-				isCharge = false;
+                PlayerCharge(true);
                 break;
             case 1:
-				PlayerEnlarge(true);
+                PlayerEnlarge(true);
                 break;
             case 2:
-                //Opponent.GetComponent<PlayerController>().PlayerControllerReverse(true);
-                //Opponent.GetComponent<PlayerController>().PlayerEnlarge(true);
-                //CreateShockWave();
-			statusTimeLeft[4]=0.5f;
+                statusTimeLeft[2] = 0.5f;
                 break;
         }
         powerCount = 0;
@@ -306,5 +301,5 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetTrigger("playerFall");
     }
-    
+
 }
