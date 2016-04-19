@@ -153,6 +153,8 @@ public class GameManager : MonoBehaviour
             fallingPlayer = other.gameObject;
             //focusCamera(fallingPlayer);
             PlayerController script = other.GetComponent<PlayerController>();
+            script.PlayerStop();
+            script.Opponent.GetComponent<PlayerController>().PlayerStop();
 
             script.triggerPlayerFall();
         }
