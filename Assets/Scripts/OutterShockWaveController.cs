@@ -5,9 +5,9 @@ public class OutterShockWaveController : MonoBehaviour
 {
     //protected CircleCollider2D circleCollider;
     protected GameObject user = null;
-    
+
     protected static float RADIUS_ENLARGE_TIME = 1f;
-    protected static float RADIUS_ENLARGE_SPEED_ORIGINAL = 2f;
+    protected static float RADIUS_ENLARGE_SPEED_ORIGINAL = 0.2f;
     protected static Vector3 ORIGINAL_SCALE;
 
     protected float timeLeft;
@@ -15,7 +15,7 @@ public class OutterShockWaveController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.IsPaused() || !isActiveAndEnabled || timeLeft <= 0)
+        if (GameManager.instance.isPaused || GameManager.instance.isGameOver || !isActiveAndEnabled || timeLeft <= 0)
         {
             return;
         }
@@ -37,6 +37,7 @@ public class OutterShockWaveController : MonoBehaviour
     public void setUser(GameObject player)
     {
         user = player;
+        gameObject.transform.localScale = user.transform.localScale;
     }
 
     public GameObject getUser()
