@@ -21,7 +21,7 @@ public class ItemController : MonoBehaviour
     //Update is called every frame
     void Update()
     {
-        if (GameManager.IsPaused())
+        if (GameManager.instance.isPaused)
         {
             return;
         }
@@ -40,8 +40,6 @@ public class ItemController : MonoBehaviour
     {
         return timeLeft <= ItemRotTime ? punish : bonus;
     }
-
-
 
     void OnDisable()
     {

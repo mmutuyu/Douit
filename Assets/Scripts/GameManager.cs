@@ -26,12 +26,13 @@ public class GameManager : MonoBehaviour
     public GameObject[] players;
     public static string[] SCORE_STR = { "Blue", "Red" };
 
-    private static bool pause = false;
-    public static int WIN_SCORE = 1;
+    public static int WIN_SCORE = 5;
 
     //basic set up
     public static GameManager instance = null;
     public GameObject[] PickUps;
+    public GameObject OutterShockWave;
+    public GameObject InnerShockWave;
 
     private static float pi = (float)Math.PI;
 
@@ -46,6 +47,10 @@ public class GameManager : MonoBehaviour
     private Vector3 boardSize;
 
     private static GameObject fallingPlayer;
+    //private float EndPauseTime=0;
+
+    public bool isPaused = false;
+    public bool isGameOver = false;
 
     void Awake()
     {
@@ -54,14 +59,14 @@ public class GameManager : MonoBehaviour
         {
             //if not, set instance to this
             instance = this;
+
         }
         //If instance already exists and it's not this:
         else if (instance != this)
         {
-            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager. 
             Destroy(gameObject);
         }
-
     }
 
 
@@ -91,7 +96,13 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.IsPaused())
+        /*
+        if (isPaused && EndPauseTime<Time.realtimeSinceStartup) {
+            Debug.Log("Resume");
+            ResumeGame();
+        }
+        */
+        if (isPaused || isGameOver)
         {
             return;
         }
@@ -136,27 +147,31 @@ public class GameManager : MonoBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         //player off stage
-        if (!pause && (other.tag == "Blue" || other.tag == "Red"))
+        if (!isPaused && (other.tag == "Player"))
         {
-            Debug.Log("Judge");
+            isGameOver = true;
             fallingPlayer = other.gameObject;
             //focusCamera(fallingPlayer);
             PlayerController script = other.GetComponent<PlayerController>();
+            script.PlayerStop();
+            script.Opponent.GetComponent<PlayerController>().PlayerStop();
+
             script.triggerPlayerFall();
-            //yield return StartCoroutine(PauseGameForSeconds(5f));
         }
     }
 
+    /*
     public void focusCamera(GameObject player)
     {
         Camera.main.transform.localPosition = player.transform.localPosition + new Vector3(0, 0, -100);
         Camera.main.fieldOfView += 1000;
     }
+    */
 
-    public static void JudgeGame()
+    public void JudgeGame()
     {
         fallingPlayer.SetActive(false);
-        String winner = fallingPlayer.tag == "Blue" ? "Red" : "Blue";
+        String winner = fallingPlayer.name == "Blue" ? "Red" : "Blue";
         int score = PlayerPrefs.GetInt(winner) + 1;
         if (score >= WIN_SCORE)
         {
@@ -169,7 +184,6 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(winner, score);
             SceneManager.LoadScene("Main");
         }
-
     }
 
     public void startNewGame()
@@ -177,25 +191,33 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Main");
     }
 
-    public static void PauseGame()
+    public void PauseGame()
     {
-        pause = true;
+        isPaused = true;
+        Time.timeScale = 0;
     }
 
-    public static void ResumeGame()
+    public void ResumeGame()
     {
-        pause = false;
+        isPaused = false;
+        Time.timeScale = 1;
     }
 
-    public static IEnumerator PauseGameForSeconds(float pauseTime)
+
+    public IEnumerator PauseGameForSeconds(float pauseTime)
     {
         PauseGame();
-        yield return new WaitForSeconds(pauseTime);
+        float start = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup < start + pauseTime)
+        {
+            yield return null;
+        }
         ResumeGame();
     }
 
-    public static bool IsPaused()
+
+    public void OnApplicationQuit()
     {
-        return pause;
+        PlayerPrefs.DeleteAll();
     }
 }
