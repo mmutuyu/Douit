@@ -33,6 +33,9 @@ public class GameManager : MonoBehaviour
     public GameObject[] PickUps;
     public GameObject OutterShockWave;
     public GameObject InnerShockWave;
+	//camera
+	public GameObject fallenPlayer ;
+	public bool isFallen = false;
 
     private static float pi = (float)Math.PI;
 
@@ -45,6 +48,8 @@ public class GameManager : MonoBehaviour
     private float nextSpawnTime;
     private Vector3 boardCenter;
     private Vector3 boardSize;
+
+
 
     private static GameObject fallingPlayer;
     //private float EndPauseTime=0;
@@ -80,6 +85,7 @@ public class GameManager : MonoBehaviour
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
         itemsOnBoard = new List<ItemController>();
+
     }
 
     public void addItemToList(ItemController item)
@@ -154,9 +160,12 @@ public class GameManager : MonoBehaviour
             //focusCamera(fallingPlayer);
             PlayerController script = other.GetComponent<PlayerController>();
             script.PlayerStop();
+			isFallen = true;
             script.Opponent.GetComponent<PlayerController>().PlayerStop();
-
+			fallenPlayer = fallingPlayer;
             script.triggerPlayerFall();
+		
+
         }
     }
 
@@ -187,7 +196,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void startNewGame()
-    {
+	{	isFallen = false;
         SceneManager.LoadScene("Main");
     }
 
