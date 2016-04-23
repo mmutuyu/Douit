@@ -194,12 +194,14 @@ public class GameManager : MonoBehaviour
     public void PauseGame()
     {
         isPaused = true;
+        UIManager.instance.enbleButtons(false);
         Time.timeScale = 0;
     }
 
     public void ResumeGame()
     {
         isPaused = false;
+        UIManager.instance.enbleButtons(true);
         Time.timeScale = 1;
     }
 

@@ -14,7 +14,6 @@ public class InnerShockWaveController : OutterShockWaveController
         {
             return;
         }
-        Debug.Log("Update counter:" + counter);
         gameObject.transform.localScale += ORIGINAL_SCALE * (counter ? RADIUS_ENLARGE_SPEED_LOW : RADIUS_ENLARGE_SPEED_ORIGINAL);
         if (timeLeft > 0 && timeLeft - Time.deltaTime < 0)
         {
@@ -31,7 +30,6 @@ public class InnerShockWaveController : OutterShockWaveController
 
             PlayerController script = coll.gameObject.GetComponent<PlayerController>();
             counter = script.isEnlarged;
-            Debug.Log("Collision counter:" + counter);
         }
         else if (coll.gameObject.tag == "PickUp") {
 
