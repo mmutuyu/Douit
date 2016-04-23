@@ -9,12 +9,34 @@ public class UIManager : MonoBehaviour
 
     public GameObject[] EnergyBar;
     public GameObject[] StarBar;
-    public Text[] AttackButtonText;
     public GameObject ReadyBar;
+
+    public Button[] AttackButtons;
+    public Button[] MoveButtons;
 
     private static float FREEZE_TIME = 2f;
 
-	private static String[] AttackButtonTextList = { "None", "Charge", "GiantGrowth", "ShockWave" };
+    private static String[] AttackButtonTextList = { "None", "Charge", "GiantGrowth", "ShockWave" };
+
+    public static UIManager instance = null;
+
+    void Awake()
+    {
+        //Check if instance already exists
+        if (instance == null)
+        {
+            //if not, set instance to this
+            instance = this;
+
+        }
+        //If instance already exists and it's not this:
+        else if (instance != this)
+        {
+            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager. 
+            Destroy(gameObject);
+        }
+    }
+
 
     // Use this for initialization
     IEnumerator Start()
@@ -27,13 +49,12 @@ public class UIManager : MonoBehaviour
 
             setStarBar(StarBar[i], 0);
 
-            setAttackButtonText(AttackButtonText[i], script.getSkillLevel());
+            AttackButtons[i].GetComponentInChildren<Text>().text = AttackButtonTextList[script.getSkillLevel() + 1];
         }
 
-        Debug.Log("start pause:"+Time.realtimeSinceStartup);
         yield return GameManager.instance.PauseGameForSeconds(FREEZE_TIME);
         ReadyBar.SetActive(false);
-    }    
+    }
 
     // Update is called once per frame
     void Update()
@@ -50,7 +71,8 @@ public class UIManager : MonoBehaviour
 
             setStarBar(StarBar[i], (float)PlayerPrefs.GetInt(GameManager.SCORE_STR[i]) / GameManager.WIN_SCORE);
 
-            setAttackButtonText(AttackButtonText[i], script.getSkillLevel());
+            AttackButtons[i].GetComponentInChildren<Text>().text = AttackButtonTextList[script.getSkillLevel()+1];
+            
         }
     }
 
@@ -63,11 +85,17 @@ public class UIManager : MonoBehaviour
     {
         starBar.GetComponent<Image>().fillAmount = amount;
     }
-
-    void setAttackButtonText(Text abt, int skill)
+    
+    public void enbleButtons(bool active)
     {
-        abt.text = AttackButtonTextList[skill + 1];
+        for (int i = 0; i < AttackButtons.Length; i++)
+        {
+            AttackButtons[i].interactable = active;
+        }
+        for (int i = 0; i < MoveButtons.Length; i++)
+        {
+            MoveButtons[i].interactable = active;
+        }
     }
-
 
 }
