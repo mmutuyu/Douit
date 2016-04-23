@@ -8,7 +8,7 @@ public class camera : MonoBehaviour {
 	private float smooth;
 	private float size;
 	void Start () {
-		smooth = 0.4F;
+		smooth = 1.0F;
 		size = Camera.main.orthographicSize;
 	
 	}
@@ -19,6 +19,7 @@ public class camera : MonoBehaviour {
 		GameManager script = gm.GetComponent<GameManager>();
 		if(script.isFallen){
 			fallenPlayer = script.fallenPlayer;	
+			//Camera.main.orthographicSize = Mathf.Lerp (size, 100.0F,Time.time);
 			Camera.main.orthographicSize = 300;
 			transform.position =  Vector3.Lerp(transform.position,fallenPlayer.transform.position,Time.deltaTime*smooth );
 		}

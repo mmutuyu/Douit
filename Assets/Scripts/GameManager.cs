@@ -169,6 +169,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     /*
     public void focusCamera(GameObject player)
     {
