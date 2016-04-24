@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
 
     private static float FREEZE_TIME = 2f;
 
-    private static String[] AttackButtonTextList = { "None", "Charge", "GiantGrowth", "ShockWave" };
+    //private static String[] AttackButtonTextList = { "None", "Charge", "GiantGrowth", "ShockWave" };
     public Image[] AttackButtonImages;
 
     public static UIManager instance = null;
@@ -53,7 +53,7 @@ public class UIManager : MonoBehaviour
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    AttackButtonSprites[i, j, k] = Resources.Load<Sprite>("Sprite/SkillButton_Player" + i + j + k);
+                    AttackButtonSprites[i, j, k] = Resources.Load<Sprite>("AttackButton/SkillButton_Player" + i + j + k);
                 }
             }
         }
@@ -66,7 +66,7 @@ public class UIManager : MonoBehaviour
 
             setStarBar(StarBar[i], 0);
 
-            AttackButtons[i].GetComponentInChildren<Text>().text = AttackButtonTextList[script.getSkillLevel() + 1];
+            //AttackButtons[i].GetComponentInChildren<Text>().text = AttackButtonTextList[script.getSkillLevel() + 1];
         }
 
         yield return GameManager.instance.PauseGameForSeconds(FREEZE_TIME);
