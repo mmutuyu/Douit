@@ -327,6 +327,7 @@ public class PlayerController : MonoBehaviour
 
     public void triggerPlayerFall()
     {
+        Debug.Log("Player Start Fall");
 		SoundManager.instance.PlaySingle (fallSound);
         animator.SetTrigger("playerFall");
     }
