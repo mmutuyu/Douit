@@ -13,6 +13,10 @@ public class UIManager : MonoBehaviour
 
     public Button[] AttackButtons;
     public Button[] MoveButtons;
+    public Button PauseButton;
+    public Button ResumeButton;
+
+    public GameObject Canves;
 
     //[player][skill][state]
     public Sprite[,,] AttackButtonSprites = new Sprite[2, 4, 2];
@@ -124,4 +128,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void visibleButtons(bool visible)
+    {
+        Canves.SetActive(visible);
+    }
 }
