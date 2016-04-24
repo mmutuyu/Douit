@@ -61,6 +61,15 @@ public class PlayerController : MonoBehaviour
     //animation
     Animator animator;
 
+	//sound
+	public AudioClip eatSound;
+	public AudioClip bounceSound;
+	public AudioClip fallSound;
+	public AudioClip enlargeSound;
+	public AudioClip chargeSound;
+	public AudioClip shockwaveSound;
+
+
     void Start()
     {
         //set basic component
@@ -193,17 +202,25 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-
-        if (other.tag == "PowerBonusLow")
-        {
-            PickUpItem(other);
-        }
-        else if (other.tag == "PowerBonusMid")
-        {
-            PickUpItem(other);
-        }
+		if (other.tag == "PowerBonusLow") {
+			SoundManager.instance.PlaySingle (eatSound);
+			PickUpItem (other);
+		} else if (other.tag == "PowerBonusMid") {
+			SoundManager.instance.PlaySingle (eatSound);
+			PickUpItem (other);
+		} else if (other.tag == "Player") {
+			Debug.Log ("Player Bounce");
+			SoundManager.instance.PlaySingle (bounceSound);
+		}
 
     }
+
+	private void OnCollisionEnter2D(Collision2D other){
+		if (other.gameObject.tag == "Player") {
+			Debug.Log ("Player Bounce");
+			SoundManager.instance.PlaySingle (bounceSound);
+		}
+	}
 
     private void PickUpItem(Collider2D other)
     {
@@ -254,6 +271,7 @@ public class PlayerController : MonoBehaviour
 
     private void CreateShockWave()
     {
+		SoundManager.instance.PlaySingle (shockwaveSound);
         GameObject outterWave = Instantiate(OutterShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
         outterWave.GetComponent<OutterShockWaveController>().setUser(gameObject);
         GameObject innerWave = Instantiate(InnerShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
@@ -281,9 +299,11 @@ public class PlayerController : MonoBehaviour
         {
             case 0:
                 PlayerCharge(true);
+				SoundManager.instance.PlaySingle (chargeSound);
                 break;
             case 1:
                 PlayerEnlarge(true);
+				SoundManager.instance.PlaySingle (enlargeSound);
                 break;
             case 2:
                 statusTimeLeft[2] = 0.5f;
@@ -307,6 +327,7 @@ public class PlayerController : MonoBehaviour
 
     public void triggerPlayerFall()
     {
+		SoundManager.instance.PlaySingle (fallSound);
         animator.SetTrigger("playerFall");
     }
 
