@@ -62,9 +62,10 @@ public class UIManager : MonoBehaviour
         {
             PlayerController script = GameManager.instance.players[i].GetComponent<PlayerController>();
 
-            setEnergyBar(EnergyBar[i], 0);
+            setEnergyBar(EnergyBar[i], (float)script.getPowerCount() / PlayerController.POWER_MAX_RANGE);
 
-            setStarBar(StarBar[i], 0);
+            setStarBar(StarBar[i], (float)PlayerPrefs.GetInt(GameManager.SCORE_STR[i]) / GameManager.WIN_SCORE);
+
 
             //AttackButtons[i].GetComponentInChildren<Text>().text = AttackButtonTextList[script.getSkillLevel() + 1];
         }
