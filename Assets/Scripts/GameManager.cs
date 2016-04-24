@@ -25,6 +25,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] players;
     public static string[] SCORE_STR = { "Blue", "Red" };
+    //
+    public bool isFallen=false;
+    public GameObject fallenPlayer;
 
     public static int WIN_SCORE = 5;
 
@@ -151,6 +154,8 @@ public class GameManager : MonoBehaviour
         {
             isGameOver = true;
             fallingPlayer = other.gameObject;
+            isFallen = true;
+            fallenPlayer = fallingPlayer;
             //focusCamera(fallingPlayer);
             PlayerController script = other.GetComponent<PlayerController>();
             script.PlayerStop();
