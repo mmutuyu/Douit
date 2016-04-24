@@ -50,5 +50,14 @@ public class OutterShockWaveController : MonoBehaviour
         gameObject.transform.localScale = ORIGINAL_SCALE;
         user = null;
     }
+    
+    //destroy pickup items
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "PowerBonusLow" || other.tag == "PowerBonusMid")
+        {
+            other.gameObject.SetActive(false);
+        }
+    }
 
 }
