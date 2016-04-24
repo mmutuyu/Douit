@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] players;
     public static string[] SCORE_STR = { "Blue", "Red" };
     //
-    public bool isFallen=false;
+    public bool isFallen = false;
     public GameObject fallenPlayer;
 
     public static int WIN_SCORE = 5;
@@ -152,6 +152,7 @@ public class GameManager : MonoBehaviour
         //player off stage
         if (!isPaused && (other.tag == "Player"))
         {
+            UIManager.instance.visibleButtons(false);
             isGameOver = true;
             fallingPlayer = other.gameObject;
             isFallen = true;

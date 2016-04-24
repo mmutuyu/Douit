@@ -47,7 +47,7 @@ public class OutterShockWaveController : MonoBehaviour
 
     protected void OnDisable()
     {
-        user.GetComponent<PlayerController>().enableCollider(true);
+        //user.GetComponent<PlayerController>().enableCollider(true);
         gameObject.transform.localScale = ORIGINAL_SCALE;
         user = null;
     }
