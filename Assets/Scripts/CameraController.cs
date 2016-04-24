@@ -10,7 +10,7 @@ public class CameraController : MonoBehaviour {
 	private GameManager script;
 
 	void Start () {
-		smooth = 2.0F;
+		smooth = 3.0F;
 		size = Camera.main.orthographicSize;
 		script = gm.GetComponent<GameManager>();
 
@@ -24,10 +24,10 @@ public class CameraController : MonoBehaviour {
 			Camera.main.orthographicSize = 350;
 			transform.position = Vector3.Lerp (transform.position, fallenPlayer.transform.position, Time.deltaTime * smooth);
             //check if camera is at right position 
-			if (Mathf.Abs(transform.position.x - fallenPlayer.transform.position.x)<20 && Mathf.Abs(transform.position.y - fallenPlayer.transform.position.y)<20) {
+			/*if (Mathf.Abs(transform.position.x - fallenPlayer.transform.position.x)<20 && Mathf.Abs(transform.position.y - fallenPlayer.transform.position.y)<20) {
                 script.isFallen = false;
 				fallenPlayer.GetComponent<PlayerController> ().triggerPlayerFall ();
-			}
+			}*/
 
 		} 
 	}
