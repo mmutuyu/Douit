@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     //status
     //0:Charge, 1:Enlarge, 2:ShockWave, 3:controller reverse
     private float[] statusTimeLeft = { 0, 0, 0 };
-    private float powerCount = 2f;
+    private float powerCount = 5f;
     private int[] PowerLevels = { 1, 2, 4 };
 
     //movement
