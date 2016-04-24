@@ -10,23 +10,24 @@ public class CameraController : MonoBehaviour {
 	private GameManager script;
 
 	void Start () {
-		smooth = 2.0F;
+		smooth = 3.0F;
 		size = Camera.main.orthographicSize;
 		script = gm.GetComponent<GameManager>();
 
 	}
 
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		Camera.main.orthographicSize = size;
 
-		if(script.isFallen){
+		if (script.isFallen) {
 			fallenPlayer = script.fallenPlayer;	
-			//Camera.main.orthographicSize = Mathf.Lerp (size, 100.0F,Time.time);
-			Camera.main.orthographicSize = 400;
-			transform.position =  Vector3.Lerp(transform.position,fallenPlayer.transform.position,Time.deltaTime*smooth );
+			Camera.main.orthographicSize = 350;
+			transform.position = Vector3.Lerp (transform.position, fallenPlayer.transform.position, Time.deltaTime * smooth);
+			if (Mathf.Abs(transform.position.x - fallenPlayer.transform.position.x)<20 && Mathf.Abs(transform.position.y - fallenPlayer.transform.position.y)<20) {
+				fallenPlayer.GetComponent<PlayerController> ().triggerPlayerFall ();
+			}
 
-
-		}
+		} 
 	}
 }

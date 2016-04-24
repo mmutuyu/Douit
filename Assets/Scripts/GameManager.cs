@@ -36,7 +36,6 @@ public class GameManager : MonoBehaviour
 	//camera
 	public GameObject fallenPlayer ;
 	public bool isFallen = false;
-	public bool cameraDone = false;
 
     private static float pi = (float)Math.PI;
 
@@ -159,15 +158,12 @@ public class GameManager : MonoBehaviour
         {
             isGameOver = true;
             fallingPlayer = other.gameObject;
-            //focusCamera(fallingPlayer);
             PlayerController script = other.GetComponent<PlayerController>();
             script.PlayerStop();
 			isFallen = true;
             script.Opponent.GetComponent<PlayerController>().PlayerStop();
 			fallenPlayer = fallingPlayer;
-
-
-			script.triggerPlayerFall();
+			//script.triggerPlayerFall(); move to CameraController
 		
 
         }
