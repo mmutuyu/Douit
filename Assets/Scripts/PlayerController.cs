@@ -230,6 +230,12 @@ public class PlayerController : MonoBehaviour
         other.gameObject.SetActive(false);
     }
 
+    public void enableCollider(bool isEnabled)
+    {
+        CircleCollider2D coll = GetComponent<CircleCollider2D>();
+        coll.enabled = isEnabled;
+        rb2d.isKinematic = !isEnabled;
+    }
 
 
 
@@ -277,7 +283,7 @@ public class PlayerController : MonoBehaviour
         GameObject innerWave = Instantiate(InnerShockWave, gameObject.transform.localPosition, Quaternion.identity) as GameObject;
         innerWave.GetComponent<InnerShockWaveController>().setUser(gameObject);
 
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
         outterWave.SetActive(true);
         innerWave.SetActive(true);
     }
@@ -306,6 +312,7 @@ public class PlayerController : MonoBehaviour
 				SoundManager.instance.PlaySingle (enlargeSound);
                 break;
             case 2:
+                enableCollider(false);
                 statusTimeLeft[2] = 0.5f;
                 break;
         }
