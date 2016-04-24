@@ -14,9 +14,14 @@ public class UIManager : MonoBehaviour
     public Button[] AttackButtons;
     public Button[] MoveButtons;
 
+    //[player][skill][state]
+    public Sprite[,,] AttackButtonSprites = new Sprite[2, 4, 2];
+
+
     private static float FREEZE_TIME = 2f;
 
     private static String[] AttackButtonTextList = { "None", "Charge", "GiantGrowth", "ShockWave" };
+    public Image[] AttackButtonImages;
 
     public static UIManager instance = null;
 
@@ -41,6 +46,18 @@ public class UIManager : MonoBehaviour
     // Use this for initialization
     IEnumerator Start()
     {
+        //load sprites
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    AttackButtonSprites[i, j, k] = Resources.Load<Sprite>("Sprite/SkillButton_Player" + i + j + k);
+                }
+            }
+        }
+
         for (int i = 0; i < GameManager.instance.players.Length; i++)
         {
             PlayerController script = GameManager.instance.players[i].GetComponent<PlayerController>();
@@ -71,9 +88,17 @@ public class UIManager : MonoBehaviour
 
             setStarBar(StarBar[i], (float)PlayerPrefs.GetInt(GameManager.SCORE_STR[i]) / GameManager.WIN_SCORE);
 
-            AttackButtons[i].GetComponentInChildren<Text>().text = AttackButtonTextList[script.getSkillLevel()+1];
-            
+            setAttackButtonSprite(AttackButtons[i], i, script.getSkillLevel() + 1);
+
         }
+    }
+
+    void setAttackButtonSprite(Button button, int player, int level)
+    {
+        button.GetComponentInChildren<Image>().sprite = AttackButtonSprites[player, level, 0];
+        SpriteState state = new SpriteState();
+        state.pressedSprite = AttackButtonSprites[player, level, 1];
+        button.spriteState = state;
     }
 
     void setEnergyBar(GameObject energyBar, float amount)
@@ -85,7 +110,7 @@ public class UIManager : MonoBehaviour
     {
         starBar.GetComponent<Image>().fillAmount = amount;
     }
-    
+
     public void enbleButtons(bool active)
     {
         for (int i = 0; i < AttackButtons.Length; i++)
