@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviour
             script.PlayerStop();
             script.Opponent.GetComponent<PlayerController>().PlayerStop();
 
-            //script.triggerPlayerFall();
+            script.triggerPlayerFall();
         }
     }
 
