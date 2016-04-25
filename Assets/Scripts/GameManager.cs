@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public PauseWindow pauseWindow;
+    public EndWindow endWindow;
+    public StartWindow startWindow;
     public GameObject[] players;
     public static string[] SCORE_STR = { "Blue", "Red" };
     //
@@ -179,11 +182,16 @@ public class GameManager : MonoBehaviour
         fallingPlayer.SetActive(false);
         String winner = fallingPlayer.name == "Blue" ? "Red" : "Blue";
         int score = PlayerPrefs.GetInt(winner) + 1;
+
+        GenericWindow.newgame = false;
         if (score >= WIN_SCORE)
         {
             PlayerPrefs.SetInt("Blue", 0);
             PlayerPrefs.SetInt("Red", 0);
             PlayerPrefs.SetString("Winner", winner);
+            endWindow.winner = winner;
+            GenericWindow.newgame = true;
+            GenericWindow.endgame = true;
             SceneManager.LoadScene("Win");
         }
         else {
@@ -192,16 +200,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void startNewGame()
-    {
-        SceneManager.LoadScene("Main");
+    // public void startNewGame()
+    // {
+    //     SceneManager.LoadScene("Main");
+    // }
+
+    public void PauseGameAndPopWindow(){
+      PauseGame();
+      pauseWindow.Open();
     }
 
     public void PauseGame()
     {
         isPaused = true;
         UIManager.instance.enbleButtons(false);
-        Time.timeScale = 0;
+        Time.timeScale = 0;   
     }
 
     public void ResumeGame()
