@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public PauseWindow pauseWindow;
+    public EndWindow endWindow;
+    public StartWindow startWindow;
     public GameObject[] players;
     public static string[] SCORE_STR = { "Blue", "Red" };
     //
@@ -78,7 +81,7 @@ public class GameManager : MonoBehaviour
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         boardCenter = sr.bounds.center;
-        boardSize = sr.bounds.size;
+        boardSize = sr.bounds.size * 0.8f;
         radius = boardSize.x / 3;
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
@@ -179,11 +182,15 @@ public class GameManager : MonoBehaviour
         fallingPlayer.SetActive(false);
         String winner = fallingPlayer.name == "Blue" ? "Red" : "Blue";
         int score = PlayerPrefs.GetInt(winner) + 1;
+
+        GenericWindow.newgame = false;
         if (score >= WIN_SCORE)
         {
             PlayerPrefs.SetInt("Blue", 0);
             PlayerPrefs.SetInt("Red", 0);
             PlayerPrefs.SetString("Winner", winner);
+            endWindow.winner = winner;
+            GenericWindow.newgame = true;
             SceneManager.LoadScene("Win");
         }
         else {
@@ -192,9 +199,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void startNewGame()
+    // public void startNewGame()
+    // {
+    //     SceneManager.LoadScene("Main");
+    // }
+
+    public void PauseGameAndPopWindow()
     {
-        SceneManager.LoadScene("Main");
+        PauseGame();
+        pauseWindow.Open();
     }
 
     public void PauseGame()
@@ -220,7 +233,7 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-        ResumeGame();
+        if (!GenericWindow.newgame) ResumeGame();
     }
 
 
