@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class WinMenuController : MonoBehaviour
 {
 
-
     public Text WinLoseText;
 
     public static WinMenuController instance = null;
@@ -42,6 +41,7 @@ public class WinMenuController : MonoBehaviour
 
     public void startNewGame()
     {
+        GenericWindow.newgame = false;
         SceneManager.LoadScene("Main");
     }
 

@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         boardCenter = sr.bounds.center;
-        boardSize = sr.bounds.size;
+        boardSize = sr.bounds.size * 0.8f;
         radius = boardSize.x / 3;
 
         nextSpawnTime = Random.Range(spawnInterval.minimum, spawnInterval.maximum);
@@ -191,7 +191,6 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetString("Winner", winner);
             endWindow.winner = winner;
             GenericWindow.newgame = true;
-            GenericWindow.endgame = true;
             SceneManager.LoadScene("Win");
         }
         else {
@@ -205,16 +204,17 @@ public class GameManager : MonoBehaviour
     //     SceneManager.LoadScene("Main");
     // }
 
-    public void PauseGameAndPopWindow(){
-      PauseGame();
-      pauseWindow.Open();
+    public void PauseGameAndPopWindow()
+    {
+        PauseGame();
+        pauseWindow.Open();
     }
 
     public void PauseGame()
     {
         isPaused = true;
         UIManager.instance.enbleButtons(false);
-        Time.timeScale = 0;   
+        Time.timeScale = 0;
     }
 
     public void ResumeGame()
@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-        ResumeGame();
+        if (!GenericWindow.newgame) ResumeGame();
     }
 
 
